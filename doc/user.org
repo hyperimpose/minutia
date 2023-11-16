@@ -99,36 +99,36 @@ Using this you can implement things such as a youtube search bot.
 See [[../src/minutia_response.erl][minutia_response]] for a complete description of the possible map types
 that can be returned.
 
-*** get(Link :: string) -> response() | {error, unsupported_scheme}.
-*** get(Link :: string(), Options :: options()) -> response() | {error, unsupported_scheme}.
+*** Functions
+
+**** get(Link :: string) -> response() | {error, unsupported_scheme}.
+**** get(Link :: string(), Options :: options()) -> response() | {error, unsupported_scheme}.
 
 Access the remote resource in the ~Link~ and return a map with a short summary of its content.
 
 - Schemes supported: HTTP / HTTPS
 
-**** Options
-***** lang
+***** Options
+****** lang
 An IETF BCP 47 language tag. This tag is used when requesting the
 resource. It is not guaranteed that the output will be in specified
 language.
 
 *Default*: ~<<"en">>~
 
-***** timeout
+****** timeout
 The amount of time in milliseconds to wait for a response.  This is a
 gen_server timeout and if exceeded it will exit the calling
 process. It does not control the internal timeout of libminutia.
 
 *Default*: ~15_000~
 
-***** skip_cache
+****** skip_cache
 minutia uses a cache to speed up multiple calls to the same resource.
 Setting the option ~skip_cache~ to ~true~ will skip the cache and a
 fresh result will be retrieved.
 
 *Default*: ~false~
-
-*** Functions
 
 **** set_http_useragent(UA :: binary()) -> ok.
 Set the User-Agent header used when making HTTP requests.
