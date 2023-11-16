@@ -1,0 +1,163 @@
+* User documentation
+
+This document describes what minutia does and how to use it.
+
+** Prerequisites
+
+Readers must be familiar with the Erlang programming language, the concepts of OTP and should have a basic
+understanding of the URL structure.
+
+** Purpose
+
+minutia tries to provide a short summary of any remote resource. This
+can be a title, a filesize, the resolution of an image etc. The
+intented usecase is to provide short previews for links posted in chat
+programs.
+
+For example, if we give minutia a link to a photo: https://www.gnu.org/software/emacs/images/emacs.png
+it will return the following information:
+#+BEGIN_SRC erlang
+  #{m => http_png,
+    t => <<"image/png, 128x128, Size: 13.15 KB">>,
+
+    size => <<"13.15 KB">>,
+    width => 128,
+    height => 128,
+    explicit => false}
+#+END_SRC
+
+
+** Examples
+
+Once minutia is up and running you can use it as follows:
+
+Getting the title from a website:
+#+BEGIN_SRC erlang
+  get_title(Link) ->
+      {ok, #{t := Title}} = minutia:get(Link),
+      Title.
+
+  %% <<"hyperimpose">> = get_title("https://hyperimpose.org").
+#+END_SRC
+
+
+For some select websites, special features have also been implemented. On YouTube, for
+example, you can search for videos using the following URL:
+~https://www.youtube.com/results?search_query=<YOUR QUERY HERE>~
+#+BEGIN_SRC erlang
+  minutia:get("https://www.youtube.com/results?search_query=Happy+Mondays+Kuff+Dam").
+
+  {ok,#{m => http_youtube_search,
+        t => <<"Happy Mondays Kuff Dam - YouTube">>,
+        results =>
+            [#{name => <<"Happy Mondays - Kuff Dam">>,
+               date => <<"5 years ago">>,
+               duration => <<"3:07">>,
+               channel => <<"London Records">>,
+               short_url => <<"https://youtu.be/KAdR0yw0kSk">>,
+               views => <<"69,786 views">>,
+               yt_id => <<"KAdR0yw0kSk">>},
+             #{name => <<"Happy Mondays - Kuff Dam">>,
+               date => <<"16 years ago">>,
+               duration => <<"1:59">>,
+               channel => <<"dukes007">>,
+               short_url => <<"https://youtu.be/3lnm7Z1uRbg">>,
+               views => <<"24,951 views">>,
+               yt_id => <<"3lnm7Z1uRbg">>},
+             #{name => <<"Happy Mondays - Kuff Dam (Peel Session)">>,
+               date => <<"1 year ago">>,
+               duration => <<"4:21">>,
+               channel => <<"Vibracobra23 Redux">>,
+               short_url => <<"https://youtu.be/WM4jet1e3rE">>,
+               views => <<"1,245 views">>,
+               yt_id => <<"WM4jet1e3rE">>} ... ]}}
+#+END_SRC
+
+Using this you can implement things such as a youtube search bot.
+
+
+** API reference
+
+*** Types
+
+**** options
+
+#+BEGIN_SRC erlang
+  -type options() :: #{lang => binary(),
+                       timeout => integer(),
+                       skip_cache => boolean()}.
+#+END_SRC
+
+**** response
+
+#+BEGIN_SRC erlang
+  -type response() :: {ok, minutia_response:http()}
+                    | false
+                    | {error, Message :: binary()}.
+#+END_SRC
+
+See [[../src/minutia_response.erl][minutia_response]] for a complete description of the possible map types
+that can be returned.
+
+*** get(Link :: string) -> response() | {error, unsupported_scheme}.
+*** get(Link :: string(), Options :: options()) -> response() | {error, unsupported_scheme}.
+
+Access the remote resource in the ~Link~ and return a map with a short summary of its content.
+
+- Schemes supported: HTTP / HTTPS
+
+**** Options
+***** lang
+An IETF BCP 47 language tag. This tag is used when requesting the
+resource. It is not guaranteed that the output will be in specified
+language.
+
+*Default*: ~<<"en">>~
+
+***** timeout
+The amount of time in milliseconds to wait for a response.  This is a
+gen_server timeout and if exceeded it will exit the calling
+process. It does not control the internal timeout of libminutia.
+
+*Default*: ~15_000~
+
+***** skip_cache
+minutia uses a cache to speed up multiple calls to the same resource.
+Setting the option ~skip_cache~ to ~true~ will skip the cache and a
+fresh result will be retrieved.
+
+*Default*: ~false~
+
+
+*** set_http_useragent(UA :: binary()) -> ok.
+Set the User-Agent header used when making HTTP requests.
+
+*** set_lang(Lang :: binary()) -> ok.
+Set the default language to try and get the resource in. E.g. en-US
+
+*** set_max_filesize(Size :: integer()) -> ok.
+Set the max number of bytes to download when the content is a
+file. File downloads are used to provide extra metadata. The files are
+temporarily saved in /tmp and are deleted after the libary is done
+processing them. If the file is bigger than this number it is not downloaded.
+
+Set this to 0 to disable this feature.
+
+*** set_max_htmlsize(Size :: integer()) -> ok.
+Set the max number of bytes to download when the content is an HTML document.
+
+Set this to 0 to disable HTML document parsing.
+
+
+** Special links
+
+This section lists all the links that are handled in a special way to provide extra information.
+See [[../src/minutia_response.erl][minutia_response]] for the exact format of the returned map.
+
+|----------------------+------------------------------------------------------------|
+| mechanism            | link format - Caps: Any text - [ ... ]: Optional params    |
+|----------------------+------------------------------------------------------------|
+| http_lainchan_thread | https://lainchan.org/ BOARD /res/ THREAD .html [# POST_ID] |
+| http_youtube_search  | https://www.youtube.com/results?search_query= QUERY        |
+|----------------------+------------------------------------------------------------|
+

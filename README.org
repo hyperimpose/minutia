@@ -1,0 +1,82 @@
+#+OPTIONS: ^:nil
+
+* minutia
+
+minutia summurizes the content of various internet services. It uses a URL based interface. Each URL is mapped
+to a dictionary that contains data about the resource linked, such as its title, its filesize and more.
+
+** Features
+
+- Supported protocols: HTTP
+- Content types: HTML, PDF, PNG, JPEG, MP3, ACC, FLAC and more.
+- Customized extraction mechanisms for various services.
+- Built in caching.
+- Supports multiple languages.
+- Includes tests that can be used to ensure that each service is parsed properly.
+
+** Build
+
+*** Dependencies
+To build and run minutia the following dependencies are required: 
+- Python 3.11 or later (must have access to venv and pip)
+- Erlang/OTP 26 or later
+- GNU make (only needed for building the application)
+
+The following are runtime dependencies. They are not needed to build minutia, but they must be available at
+runtime:
+- bencode :: https://hyperimpose.org/miscellany
+- polycache :: https://hyperimpose.org/miscellany
+
+*** Make
+To built the application run:
+#+BEGIN_SRC bash
+make
+#+END_SRC
+
+The above command will create the following directories:
+- ~/ebin~ :: It contains the compiled Erlang code.
+- ~/priv/bin/libminutia~ :: It contains libminutia (written in Python 3) and its dependencies.
+
+~make clean~ will delete any build artifacts.
+
+*** Run
+How you run minutia mainly depends on your project and its structure. To run the application standalone, follow
+the steps below:
+
+1. Build ~bencode~ and ~polycache~ and copy the contents of their ~/ebin~ directories to the ~/ebin~ directory
+   created by the [[Make][Make]] step.
+2. From the project root start an erlang shell with: ~erl -pa ./ebin/~
+3. Start all the applications needed (in order):
+   #+BEGIN_SRC erlang
+   application:start(bencode).
+   application:start(polycache).
+   application:start(minutia).
+   #+END_SRC
+4. Proceed to run the example in [[Usage][Usage]]. You can also read the [[./docs/user.org][User documentation]] for more examples and
+   a complete description of the library.
+
+** Usage
+
+#+BEGIN_SRC erlang
+  %% Ensure minutia has been started. Example: application:start(minutia).
+  %% After minutia has been started you can access resources as follows:
+
+  minutia:get("https://hyperimpose.org").
+
+  %% The previous call would return the following:
+  {ok,#{m => http_html, t => <<"hyperimpose">>, explicit => false}}
+#+END_SRC
+
+
+** Documentation
+
+- [[./doc/user.org][User documentation]] :: API reference, examples, configuration
+
+** License
+
+minutia is licensed under the [[https://www.gnu.org/licenses/agpl-3.0.html][GNU Affero General Public License version 3 (AGPLv3)]].
+#+BEGIN_CENTER
+[[https://www.gnu.org/graphics/agplv3-with-text-162x68.png]]
+#+END_CENTER
+
+A copy of this license is included in the file [[../../COPYING][COPYING]].

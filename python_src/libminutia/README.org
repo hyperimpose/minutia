@@ -1,0 +1,107 @@
+#+OPTIONS: ^:nil
+
+* libminutia
+
+*This libray is an internal part of minutia and its API may change without maintaining backwards compatibility*
+
+libminutia handles the data and metadata retrieval part of minutia. It can be used as a standalone library in
+Python projects. The ~__main__.py~ file implements the necessary interface for this library to also be used as
+an Erlang port.
+
+** Features
+
+- Supported protocols: HTTP
+- Supports many content types: HTML, PDF, PNG, JPEG, MP3, ACC, FLAC and more.
+- Customized extraction mechanisms for various services.
+- Calculates a TTL value that can be used for caching.
+- Supports multiple languages.
+- Built with Python async.
+- Includes tests that can be used to ensure that each service is parsed properly.
+
+** Usage
+
+Before this library can be used, it must be initialized. After intialization it can be configured.
+When you are done using it, you must also terminate it.
+
+Below is a simple example of how to use the library:
+#+BEGIN_SRC python
+  import asyncio
+  import libminutia
+
+  async def main():
+      # Initialize
+      await libminutia.init()
+
+      # Configure
+      libminutia.set_lang("en-GB")
+      libminutia.set_max_filesize(6_553_500)  # 6.5 MB in bytes
+
+      # Use the library
+      "ok", data = await libminutia.http.get("http://hyperimpose.org")
+
+      # `data' will be a dictionary like:
+      # {
+      #     "@": "http:html",
+      #     "t": "This is the title of the page"
+      # }
+
+      # Terminate
+      await libminutia.terminate()
+
+  asyncio.run(main())
+#+END_SRC
+
+** Dependencies
+
+To use this library you must install the dependencies from requirements.txt
+
+#+BEGIN_SRC sh
+  pip install -r requirements.txt
+#+END_SRC
+
+** API
+
+*** libminutia
+
+**** Initialization / Termination
+
+|-------------------+-----------------------|
+| Callable          | Description           |
+|-------------------+-----------------------|
+| async init()      | Intialize the library |
+| async terminate() | Terminate the library |
+|-------------------+-----------------------|
+
+**** Configuration
+
+|-----------------------------+-----------------------------------------------------------+-----------|
+| Callable                    | Description                                               | Default   |
+|-----------------------------+-----------------------------------------------------------+-----------|
+| set_http_useragent(ua: str) | The useragent to use when making HTTP requests.           |           |
+| set_lang(lang: str)         | The default language to request content in. The value     | "en"      |
+|                             | is passed in HTTP headers such as Accept-Language.        |           |
+| set_max_filesize(i: int)    | The max number of bytes to download for deep inspecion of | 6_553_500 |
+|                             | supported files. Set to <= 0 to disable the feature.      |           |
+| set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.        | 6_553_500 |
+|-----------------------------+-----------------------------------------------------------+-----------|
+
+*** libminutia.http
+
+This module is used when working with HTTP/HTTPS links.
+
+|--------------------------------------+--------------------------------------------------------------|
+| Callable                             | Description                                                  |
+|--------------------------------------+--------------------------------------------------------------|
+| async get(link: str, lang: str = "") | Visit the link and return information about it. If `lang' is |
+|                                      | given then it will be used instead of the default lang set.  |
+|--------------------------------------+--------------------------------------------------------------|
+
+
+** License
+
+libminutia is licensed under the [[https://www.gnu.org/licenses/agpl-3.0.html][GNU Affero General Public License version 3 (AGPLv3)]].
+#+BEGIN_CENTER
+[[https://www.gnu.org/graphics/agplv3-with-text-162x68.png]]
+#+END_CENTER
+
+A copy of this license is included in the file [[../../COPYING][COPYING]].
