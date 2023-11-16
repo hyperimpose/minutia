@@ -128,14 +128,15 @@ fresh result will be retrieved.
 
 *Default*: ~false~
 
+*** Functions
 
-*** set_http_useragent(UA :: binary()) -> ok.
+**** set_http_useragent(UA :: binary()) -> ok.
 Set the User-Agent header used when making HTTP requests.
 
-*** set_lang(Lang :: binary()) -> ok.
+**** set_lang(Lang :: binary()) -> ok.
 Set the default language to try and get the resource in. E.g. en-US
 
-*** set_max_filesize(Size :: integer()) -> ok.
+**** set_max_filesize(Size :: integer()) -> ok.
 Set the max number of bytes to download when the content is a
 file. File downloads are used to provide extra metadata. The files are
 temporarily saved in /tmp and are deleted after the libary is done
@@ -143,7 +144,7 @@ processing them. If the file is bigger than this number it is not downloaded.
 
 Set this to 0 to disable this feature.
 
-*** set_max_htmlsize(Size :: integer()) -> ok.
+**** set_max_htmlsize(Size :: integer()) -> ok.
 Set the max number of bytes to download when the content is an HTML document.
 
 Set this to 0 to disable HTML document parsing.
