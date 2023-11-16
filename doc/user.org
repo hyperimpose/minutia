@@ -155,10 +155,10 @@ Set this to 0 to disable HTML document parsing.
 This section lists all the links that are handled in a special way to provide extra information.
 See [[../src/minutia_response.erl][minutia_response]] for the exact format of the returned map.
 
-|----------------------+------------------------------------------------------------|
-| mechanism            | link format - Caps: Any text - [ ... ]: Optional params    |
-|----------------------+------------------------------------------------------------|
-| http_lainchan_thread | https://lainchan.org/ BOARD /res/ THREAD .html [# POST_ID] |
-| http_youtube_search  | https://www.youtube.com/results?search_query= QUERY        |
-|----------------------+------------------------------------------------------------|
+|----------------------+--------------------------------------------------------------|
+| mechanism            | link format - Caps: Any text - [ ... ]: Optional params      |
+|----------------------+--------------------------------------------------------------|
+| http_lainchan_thread | ~https://lainchan.org/ BOARD /res/ THREAD .html [# POST_ID]~ |
+| http_youtube_search  | ~https://www.youtube.com/results?search_query= QUERY~        |
+|----------------------+--------------------------------------------------------------|
 
