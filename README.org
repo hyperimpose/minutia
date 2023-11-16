@@ -52,7 +52,7 @@ the steps below:
    application:start(polycache).
    application:start(minutia).
    #+END_SRC
-4. Proceed to run the example in [[Usage][Usage]]. You can also read the [[./docs/user.org][User documentation]] for more examples and
+4. Proceed to run the example in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
    a complete description of the library.
 
 ** Usage
