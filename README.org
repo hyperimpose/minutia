@@ -33,11 +33,11 @@ To built the application run:
 make
 #+END_SRC
 
+~make clean~ will delete any build artifacts.
+
 The above command will create the following directories:
 - ~/ebin~ :: It contains the compiled Erlang code.
 - ~/priv/bin/libminutia~ :: It contains libminutia (written in Python 3) and its dependencies.
-
-~make clean~ will delete any build artifacts.
 
 *** Run
 How you run minutia mainly depends on your project and its structure. To run the application standalone, follow
