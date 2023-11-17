@@ -5,18 +5,11 @@
 minutia summurizes the content of various internet services. It uses a URL based interface. Each URL is mapped
 to a dictionary that contains data about the resource linked, such as its title, its filesize and more.
 
-** Features
-
-- Supported protocols: HTTP
-- Content types: HTML, PDF, PNG, JPEG, MP3, ACC, FLAC and more.
-- Customized extraction mechanisms for various services.
-- Built in caching.
-- Supports multiple languages.
-- Includes tests that can be used to ensure that each service is parsed properly.
+https://hyperimpose.org/minutia
 
 ** Build
 
-*** Dependencies
+**** Dependencies
 To build and run minutia the following dependencies are required: 
 - Python 3.11 or later (must have access to venv and pip)
 - Erlang/OTP 26 or later
@@ -27,7 +20,7 @@ runtime:
 - bencode :: https://hyperimpose.org/miscellany
 - polycache :: https://hyperimpose.org/miscellany
 
-*** Make
+**** Make
 To built the application run:
 #+BEGIN_SRC bash
 make
@@ -40,7 +33,7 @@ The above command will create the following directories:
 Other commands provided are:
 - ~make clean~ :: delete any build artifacts.
 
-*** Run
+**** Run
 How you run minutia mainly depends on your project and its structure. To run the application standalone, follow
 the steps below:
 
@@ -56,6 +49,10 @@ the steps below:
 4. Proceed to run the example in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
    a complete description of the library.
 
+** Documentation
+
+- [[./doc/user.org][User documentation]] :: API reference, examples, configuration
+   
 ** Usage
 
 #+BEGIN_SRC erlang
@@ -67,11 +64,6 @@ the steps below:
   %% The previous call would return the following:
   {ok,#{m => http_html, t => <<"hyperimpose">>, explicit => false}}
 #+END_SRC
-
-
-** Documentation
-
-- [[./doc/user.org][User documentation]] :: API reference, examples, configuration
 
 ** License
 
