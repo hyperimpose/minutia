@@ -99,44 +99,53 @@ Using this you can implement things such as a youtube search bot.
 See [[../src/minutia_response.erl][minutia_response]] for a complete description of the possible map types
 that can be returned.
 
-*** Functions
+-----
 
-**** get(Link :: string) -> response() | {error, unsupported_scheme}.
-**** get(Link :: string(), Options :: options()) -> response() | {error, unsupported_scheme}.
+*** Functions
+#+BEGIN_SRC erlang
+get(Link :: string) -> response() | {error, unsupported_scheme}.
+get(Link :: string(), Options :: options()) -> response() | {error, unsupported_scheme}.
+#+END_SRC
 
 Access the remote resource in the ~Link~ and return a map with a short summary of its content.
 
 - Schemes supported: HTTP / HTTPS
 
-***** Options
-****** lang
+**** Options
+****** lang ~default: <<"en">>~
 An IETF BCP 47 language tag. This tag is used when requesting the
 resource. It is not guaranteed that the output will be in specified
 language.
 
-*Default*: ~<<"en">>~
-
-****** timeout
+****** timeout ~default: 15_000~
 The amount of time in milliseconds to wait for a response.  This is a
 gen_server timeout and if exceeded it will exit the calling
 process. It does not control the internal timeout of libminutia.
 
-*Default*: ~15_000~
-
-****** skip_cache
+****** skip_cache ~default: false~
 minutia uses a cache to speed up multiple calls to the same resource.
 Setting the option ~skip_cache~ to ~true~ will skip the cache and a
 fresh result will be retrieved.
 
-*Default*: ~false~
+-----
 
-**** set_http_useragent(UA :: binary()) -> ok.
+#+BEGIN_SRC erlang
+set_http_useragent(UA :: binary()) -> ok.
+#+END_SRC
 Set the User-Agent header used when making HTTP requests.
 
-**** set_lang(Lang :: binary()) -> ok.
+-----
+
+#+BEGIN_SRC erlang
+set_lang(Lang :: binary()) -> ok.
+#+END_SRC
 Set the default language to try and get the resource in. E.g. en-US
 
-**** set_max_filesize(Size :: integer()) -> ok.
+-----
+
+#+BEGIN_SRC erlang
+set_max_filesize(Size :: integer()) -> ok.
+#+END_SRC
 Set the max number of bytes to download when the content is a
 file. File downloads are used to provide extra metadata. The files are
 temporarily saved in /tmp and are deleted after the libary is done
@@ -144,7 +153,11 @@ processing them. If the file is bigger than this number it is not downloaded.
 
 Set this to 0 to disable this feature.
 
-**** set_max_htmlsize(Size :: integer()) -> ok.
+-----
+
+#+BEGIN_SRC erlang
+set_max_htmlsize(Size :: integer()) -> ok.
+#+END_SRC
 Set the max number of bytes to download when the content is an HTML document.
 
 Set this to 0 to disable HTML document parsing.
@@ -156,7 +169,7 @@ This section lists all the links that are handled in a special way to provide ex
 See [[../src/minutia_response.erl][minutia_response]] for the exact format of the returned map.
 
 |----------------------+--------------------------------------------------------------|
-| mechanism            | link format - Caps: Any text - [ ... ]: Optional params      |
+| mechanism            | link format / Caps: Any text / [ ... ]: Optional params      |
 |----------------------+--------------------------------------------------------------|
 | http_lainchan_thread | ~https://lainchan.org/ BOARD /res/ THREAD .html [# POST_ID]~ |
 | http_youtube_search  | ~https://www.youtube.com/results?search_query= QUERY~        |
