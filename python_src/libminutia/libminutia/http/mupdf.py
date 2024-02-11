@@ -22,7 +22,7 @@ import fitz  # type: ignore
 
 from libminutia import config
 from libminutia.common import convert_size
-from libminutia.http import fallback
+from libminutia.http import fallback, hparser
 
 
 MIME_TO_TYPE = {
@@ -48,7 +48,7 @@ async def handle(url, r):
     if length > config.max_filesize:
         return await fallback.handle(url, r)
 
-    content_type = r.headers.get("content-type", None)
+    content_type = hparser.mimetype(r.headers)
     if not content_type:
         return await fallback.handle(url, r)
 
