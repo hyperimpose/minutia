@@ -10,7 +10,7 @@ PYTHON_SRC := ${ROOT_DIR}/python_src
 
 # OTP Application - Rememeber to bump the version for new releases
 APP_NAME := $(notdir $(ROOT_DIR))
-APP_VER := 1
+APP_VER := 0.0.1
 
 APP_SPEC_SRC := $(SRC)/$(APP_NAME).app.src
 APP_SPEC := $(EBIN)/$(APP_NAME).app
