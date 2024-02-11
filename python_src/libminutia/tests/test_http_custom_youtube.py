@@ -48,7 +48,7 @@ class CustomHttpYouTube(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(r[1]["thumbnail_width"], 480)
         self.assertEqual(r[1]["html"], '<iframe width="200" height="150" src="https://www.youtube.com/embed/rdwz7QiG0lk?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen title="YouTube on the tube!"></iframe>')
 
-        self.assertGreater(r[1]["ttl"], 0)
+        self.assertGreater(r[1]["_ttl"], 0)
 
     async def test_search(self):
         u = "https://www.youtube.com/results?search_query=Kelly+Moran+Helix"
@@ -61,4 +61,4 @@ class CustomHttpYouTube(unittest.IsolatedAsyncioTestCase):
 
         self.assertIsInstance(r[1]["results"], list)
 
-        self.assertGreater(r[1]["ttl"], 0)
+        self.assertGreater(r[1]["_ttl"], 0)

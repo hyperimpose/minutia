@@ -42,4 +42,4 @@ class CustomHTTPTwitter(unittest.IsolatedAsyncioTestCase):
              "  pic.twitter.com/JXbcKpGSH5 — Google (@Google) February 3, 2020")
         )
 
-        self.assertGreater(r[1]["ttl"], 0)
+        self.assertGreater(r[1]["_ttl"], 0)

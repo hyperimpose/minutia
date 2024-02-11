@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -16,35 +16,31 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+
 import unittest
 
 import libminutia  # type: ignore
 
 
-class CustomHTTPLainchan(unittest.IsolatedAsyncioTestCase):
+class CustomHttpReddit(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await libminutia.init()
 
     async def asyncTearDown(self):
         await libminutia.terminate()
 
-    async def test_thread(self):
-        u = "https://lainchan.org/%CE%BB/res/1.html"
+    async def test_comments(self):
+        u = ("https://www.reddit.com/r/Showerthoughts/comments/"
+             "2safxv/we_should_start_keeping_giraffes_a_secret_from/cno7zic")
         r = await libminutia.http.get(u)
+
         self.assertEqual(r[0], "ok")
 
-        self.assertEqual(r[1]["@"], "http:lainchan:thread")
-        self.assertEqual(r[1]["t"], "The Sticky: /λ/ 2.0")
+        self.assertEqual(r[1]["@"], "http:reddit:comments")
+        self.assertEqual(r[1]["t"], '/r/Showerthoughts: We should start keeping giraffes a secret from young children. Imagine discovering giraffes exist when you were like 15. "Woah! Check out that long necked horse!"')
 
-        self.assertEqual(r[1]["title"], "The Sticky: /λ/ 2.0")
-        self.assertEqual(r[1]["board"], "%CE%BB")
-        self.assertEqual(r[1]["replies"], 0)
-        self.assertEqual(r[1]["files"], 1)
-        self.assertEqual(
-            r[1]["post"],
-            ("This is new /λ/, also addressable as /lambda/, the"
-             " programming board.  The intent is that this board will"
-             " be used to share and discuss programs that h...")
-        )
+        self.assertEqual(r[1]["title"], 'We should start keeping giraffes a secret from young children. Imagine discovering giraffes exist when you were like 15. "Woah! Check out that long necked horse!"')
+        self.assertEqual(r[1]["author_name"], "yankeltank")
+        self.assertEqual(r[1]["subreddit"], "Showerthoughts")
 
         self.assertGreater(r[1]["_ttl"], 0)
