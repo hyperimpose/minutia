@@ -165,8 +165,9 @@ async def http_get(link, lang):
             if msg:
                 log("debug", f"{link} - {exception} \n\n")
             else:  # No msg means the error is unexpected
+                tb = "".join(traceback.format_exception(exception))
                 log("error", (f":( libminutia crashed @ {link} -> {exception}"
-                              f"\n\n{traceback.format_exc()}"))
+                              f"\n\n{tb}"))
 
 
 async def unknown_command(command, *args):
