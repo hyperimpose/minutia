@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -25,7 +25,7 @@ from libminutia.http import (
     # Default handler
     default,
     # Custom handlers
-    fourchan, lainchan, twitter, youtube
+    fourchan, lainchan, reddit, twitter, youtube
 )
 
 # ====================================================================
@@ -77,7 +77,7 @@ async def get(link: str, lang="") -> ReturnT:
 # ====================================================================
 
 handler_l: list[CustomHandler] = [
-    fourchan.file, lainchan.thread, twitter.tweet,
+    fourchan.file, lainchan.thread, reddit.comments, twitter.tweet,
     youtube.video, youtube.search
 ]
 
