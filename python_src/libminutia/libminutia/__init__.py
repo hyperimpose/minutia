@@ -1,3 +1,8 @@
+"""libminutia summurizes the content of various internet services"""
+
+__version__ = "0.1"
+
+
 # --------------------------------------------------------------------
 # Copyright (C) 2023 hyperimpose.org
 #
