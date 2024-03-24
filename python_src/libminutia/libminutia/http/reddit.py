@@ -18,8 +18,6 @@
 
 import re
 
-import html5lib
-
 from . import utils
 
 
@@ -27,7 +25,7 @@ from . import utils
 # Thread
 # ====================================================================
 
-COMMENTS = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:reddit.com)/r/.*/comments/.*")
+COMMENTS = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:reddit.com)/r/.*/comments/.*")  # noqa
 
 
 async def comments(url: str, _headers):
@@ -54,9 +52,9 @@ async def comments(url: str, _headers):
         "@": "http:reddit:comments",
         "t": t,
 
-        "title": title,
         "author_name": author_name,
         "subreddit": subreddit,
+        "title": title,
 
         "_ttl": utils.cache(r.headers)
     }

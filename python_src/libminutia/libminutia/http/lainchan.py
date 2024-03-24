@@ -89,11 +89,11 @@ async def thread(url: str, _headers):
         "@": "http:lainchan:thread",
         "t": title,
 
-        "title": title,
-        "post": post,
         "board": board,
-        "replies": replies,
         "files": files,
+        "post": post,
+        "replies": replies,
+        "title": title,
 
         "_ttl": utils.cache(r.headers)
     }

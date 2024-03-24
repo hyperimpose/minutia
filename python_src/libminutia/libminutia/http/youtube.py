@@ -51,16 +51,16 @@ async def video(url: str, _headers):
         "@": "http:youtube:video",
         "t": j["title"],
 
-        "title": j["title"],
         "author_name": j["author_name"],
         "author_url": j["author_url"],
-        "type": j["type"],
         "height": j["height"],
-        "width": j["width"],
-        "thumbnail_url": j["thumbnail_url"],
-        "thumbnail_height": j["thumbnail_height"],
-        "thumbnail_width": j["thumbnail_width"],
         "html": j["html"],
+        "thumbnail_height": j["thumbnail_height"],
+        "thumbnail_url": j["thumbnail_url"],
+        "thumbnail_width": j["thumbnail_width"],
+        "title": j["title"],
+        "type": j["type"],
+        "width": j["width"],
 
         "_ttl": utils.cache(r.headers)
     }
@@ -70,7 +70,7 @@ async def video(url: str, _headers):
 # Search
 # ====================================================================
 
-SEARCH = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:youtube\.com)/results\?search_query=.*")
+SEARCH = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:youtube\.com)/results\?search_query=.*")  # noqa
 
 
 async def search(url: str, headers: dict = {}):
