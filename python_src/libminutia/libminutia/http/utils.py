@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -19,6 +19,7 @@
 import time
 from typing import Any
 
+from libminutia import common
 from . import hparser
 
 
@@ -84,3 +85,26 @@ def _cache_control(headers):
         return ttl - (time.time() - date)
 
     return ttl
+
+
+# ====================================================================
+# Explicit
+# ====================================================================
+
+def get_explicit(r, path="") -> float:
+    if r.headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA":
+        return 1.0
+
+    if not path:
+        return 0.0
+
+    match hparser.mimetype(r.headers):
+        case ("image/bmp"
+              | "image/gif"
+              | "image/jpeg"
+              | "image/tiff"
+              | "image/vnd.microsoft.icon"
+              | "image/webp"):
+            return common.image_explicit_score(path)
+        case _:
+            return 0.0

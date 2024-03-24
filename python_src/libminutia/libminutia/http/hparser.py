@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -17,6 +17,8 @@
 # --------------------------------------------------------------------
 
 from email.utils import parsedate_to_datetime
+
+from libminutia import common
 
 
 def age(headers):
@@ -71,6 +73,25 @@ def expires(headers):
     try:
         return parsedate_to_datetime(s).timestamp()
     except ValueError:
+        return None
+
+
+def filename(headers):
+    # The following is not RFC 6266 compliant.
+    # Use a library if there are issues.
+    filename = headers.get("Content-Disposition", "").split("=")[-1]
+    filename = filename.replace("/", "_").replace("\\", "_")  # Sanitize
+    if filename and filename[0] == '"' and filename[-1] == '"':
+        filename = filename[1:-1]
+
+    return filename or None
+
+
+def filesize(headers):
+    length = headers.get("content-length", None)
+    if length:
+        return common.convert_size(length)
+    else:
         return None
 
 
