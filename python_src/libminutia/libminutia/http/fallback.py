@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -16,38 +16,30 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-from libminutia.common import convert_size
+from libminutia.http import hparser, utils
 
 
-async def handle(_url, r):
-    content_type = r.headers.get("content-type", "application/octet-stream")
-    length = r.headers.get("content-length", None)
-    explicit = r.headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA"
-
-    # The following is not RFC 6266 compliant.
-    # Use a library if there are issues.
-    filename = r.headers.get("Content-Disposition", "").split("=")[-1]
-    filename = filename.replace("/", "_").replace("\\", "_")  # Sanitize
-    if filename and filename[0] == '"' and filename[-1] == '"':
-        filename = filename[1:-1]
+async def handle(r):
+    mimetype = hparser.mimetype(r.headers) or "application/octet-stream"
+    filename = hparser.filename(r.headers)
+    size = hparser.filesize(r.headers)
 
     t = []
+
     if filename:
         t.append(filename)
 
-    t = ", ".join([*t, content_type])
+    t = ", ".join([*t, mimetype])
 
-    size = None
-    if length:
-        size = convert_size(length)
+    if size:
         t += f", Size: {size}"
 
     return {
         "@": "http:fallback",
         "t": t,
 
-        "content_type": content_type,
-        "filename": filename or None,
-        "explicit": explicit,
+        "explicit": utils.get_explicit(r),
+        "filename": filename,
+        "mimetype": mimetype,
         "size": size
     }

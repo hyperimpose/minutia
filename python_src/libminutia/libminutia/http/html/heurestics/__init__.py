@@ -24,14 +24,14 @@ og_site_name = {
 }
 
 
-async def apply(url, document, headers):
+async def apply(document, headers):
     try:
-        return await _apply(url, document, headers)
+        return await _apply(document, headers)
     except Exception:
         return False
 
 
-async def _apply(url, document, headers):
+async def _apply(document, headers):
     # Open Graph
     site_name = document.find("./head/meta[@property='og:site_name']")
     if site_name is not None:
@@ -39,6 +39,6 @@ async def _apply(url, document, headers):
 
         handler = og_site_name.get(site_name, None)
         if handler is not None:
-            return await handler(url, document, headers)
+            return await handler(document, headers)
 
     return False

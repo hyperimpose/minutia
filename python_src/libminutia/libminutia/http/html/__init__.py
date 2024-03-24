@@ -23,22 +23,22 @@ from libminutia import common, config
 from . import heurestics
 
 
-async def handle(url, r):
+async def handle(r):
     data = b""
     async for chunk in r.aiter_bytes():
         data += chunk
         if len(data) > config.max_htmlsize:
             break
 
-    return await get_title(url, data, r.headers, encoding=r.encoding)
+    return await get_title(data, r.headers, encoding=r.encoding)
 
 
-async def get_title(url, data, headers, encoding="utf-8"):
+async def get_title(data, headers, encoding="utf-8"):
     document = html5lib.parse(data,
                               transport_encoding=encoding,
                               namespaceHTMLElements=False)
 
-    special = await heurestics.apply(url, document, headers)
+    special = await heurestics.apply(document, headers)
     if special:
         if "explicit" not in special:
             special.update({"explicit": is_explicit(document, headers)})

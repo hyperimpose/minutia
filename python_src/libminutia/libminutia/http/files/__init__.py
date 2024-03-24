@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -16,19 +16,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-async def title(document, _headers):
-    title = document.find("./head/meta[@property='og:title']")
-    if title is not None:
-        title = title.attrib["content"]
+from . import audio, image, mupdf, video
 
-    description = document.find("./head/meta[@property='og:description']")
-    if description is not None:
-        description = description.attrib["content"]
 
-    return {
-        "@": "http:nitter",
-        "t": title,
+async def handle_audio(r):
+    return await audio.handle(r)
 
-        "description": description
-        # explicit is added by the caller
-    }
+
+async def handle_image(r):
+    return await image.handle(r)
+
+
+async def handle_mupdf(r):
+    return await mupdf.handle(r)
+
+
+async def handle_video(r):
+    return await video.handle(r)

@@ -18,11 +18,18 @@
 
 import tempfile
 
-import fitz  # type: ignore
+try:
+    import fitz  # type: ignore
+except ImportError:
+    _has_fitz = False
+    import warnings
+    warnings.warn("[optional:media] mupdf unavailable", ImportWarning)
+else:
+    _has_fitz = True
 
 from libminutia import config
 from libminutia.common import convert_size
-from libminutia.http import fallback, hparser
+from libminutia.http import fallback, hparser, utils
 
 
 MIME_TO_TYPE = {
@@ -35,31 +42,32 @@ MIME_TO_TYPE = {
 }
 
 
-async def handle(url, r):
+async def handle(r):
+    if not _has_fitz:
+        return await fallback.handle(r)
+
     length = r.headers.get("content-length", None)
     if not length:
-        return await fallback.handle(url, r)
+        return await fallback.handle(r)
 
     try:
         length = int(length)
     except ValueError:
-        return await fallback.handle(url, r)
+        return await fallback.handle(r)
 
     if length > config.max_filesize:
-        return await fallback.handle(url, r)
+        return await fallback.handle(r)
 
-    content_type = hparser.mimetype(r.headers)
-    if not content_type:
-        return await fallback.handle(url, r)
-
-    filetype = MIME_TO_TYPE[content_type]
+    mimetype = hparser.mimetype(r.headers)
+    assert mimetype is not None  # Mimetype ensured by the caller (default.py)
+    filetype = MIME_TO_TYPE[mimetype]
 
     with tempfile.NamedTemporaryFile() as fp:
         filesize = 0
         async for chunk in r.aiter_raw():
             filesize += len(chunk)
             if filesize >= config.max_filesize:
-                return await fallback.handle(url, r)
+                return await fallback.handle(r)
             fp.write(chunk)
 
         fp.seek(0)
@@ -79,7 +87,7 @@ async def handle(url, r):
             parts = [title]
             if doc.page_count:
                 parts.append(f"Pages: {doc.page_count}")
-            parts.append(content_type)
+            parts.append(mimetype)
             size = convert_size(length)
             parts.append(f"Size: {size}")
 
@@ -87,10 +95,9 @@ async def handle(url, r):
                 "@": "http:mupdf",
                 "t": ", ".join(parts),
 
-                "title": title,
+                "explicit": utils.get_explicit(r),
+                "mimetype": mimetype,
                 "pages": doc.page_count,
-
-                "content_type": content_type,
-                "explicit": r.headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA",
-                "size": size
+                "size": size,
+                "title": title
             }
