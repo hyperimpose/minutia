@@ -19,6 +19,8 @@
 import math
 import unicodedata
 
+from . import explicit
+
 
 def cleanup(s: str):
     s = " ".join(s.split())
@@ -48,3 +50,11 @@ def convert_time(time_ms):
     m = int((ms / (1000 * 60)) % 60)
     h = int((ms / (1000 * 60 * 60)) % 24)
     return f"{h:02d}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
+
+
+def is_avail_explicit() -> bool:
+    return explicit._has_explicit
+
+
+def image_explicit_score(path: str) -> float:
+    return explicit.predict_image(path)
