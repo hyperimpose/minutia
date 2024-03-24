@@ -19,9 +19,14 @@
 
 # General Settings
 lang = "en"  # Default language used
-max_htmlsize = 6_553_500  # 6.5 MB max size for loaded html documents
-max_filesize = 6_553_500  # 6.5 MB max filesize for downloaded files
+
+# The following default is based on the TCP slow start algorithm used by most
+# webservers.
+# It attempts to minimize latency, but you may want to increase it so that more
+# files are processed.
+max_htmlsize = 14_600  # 14.6 kB max size for downloaded html documents
+max_filesize = 14_600  # 14.6 kB max filesize for downloaded files
 
 
 # HTTP Settings
-http_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+http_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"  # noqa
