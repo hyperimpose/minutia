@@ -86,6 +86,8 @@ def bencode(term):
         return b"0:"
     if isinstance(term, int):
         return b"i" + str(term).encode() + b"e"
+    if isinstance(term, float):
+        return bencode(str(term).encode())
     if isinstance(term, str):
         return bencode(term.encode())
     if isinstance(term, bytes):
@@ -96,7 +98,7 @@ def bencode(term):
         acc = b"d"
         for k, v in term.items():
             if not isinstance(k, str) and not isinstance(k, bytes):
-                raise ValueError("Dictionary keys must be of type str or bytes")
+                raise ValueError("Dict keys must be of type str or bytes")
             acc += bencode(k)
             acc += bencode(v)
         acc += b"e"
@@ -115,13 +117,13 @@ async def set_lang(lang: str):
     log("debug", f"lang set to {lang}")
 
 
-async def set_max_filesize(i: int):
-    libminutia.set_max_filesize(i)
+async def set_max_filesize(i: str):
+    libminutia.set_max_filesize(int(i))
     log("debug", f"max_filesize set to {i}")
 
 
-async def set_max_htmlsize(i: int):
-    libminutia.set_max_htmlsize(i)
+async def set_max_htmlsize(i: str):
+    libminutia.set_max_htmlsize(int(i))
     log("debug", f"max_htmlsize set to {i}")
 
 
