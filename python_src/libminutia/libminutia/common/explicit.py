@@ -27,4 +27,4 @@ def predict_image(fp: str | Path | BinaryIO) -> float:
     predictions = model.predict(inputs)
     _sfw_probability, nsfw_probability = predictions[0]
 
-    return nsfw_probability
+    return float(nsfw_probability)
