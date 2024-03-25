@@ -5,23 +5,27 @@
 *This libray is an internal part of minutia and its API may change without maintaining backwards compatibility*
 
 libminutia handles the data and metadata retrieval part of minutia. It can be used as a standalone library in
-Python projects. The ~__main__.py~ file implements the necessary interface for this library to also be used as
-an Erlang port.
+Python projects.
+
+The ~__main__.py~ file is independent from libminutia. It implements the necessary interface for this library
+to also be used as an Erlang port.
 
 ** Features
 
 - Supported protocols: HTTP
-- Supports many content types: HTML, PDF, PNG, JPEG, MP3, ACC, FLAC and more.
 - Customized extraction mechanisms for various services.
 - Calculates a TTL value that can be used for caching.
 - Supports multiple languages.
 - Built with Python async.
 - Includes tests that can be used to ensure that each service is parsed properly.
 
+- [media] Supports many content types: HTML, PDF, PNG, JPEG, MP3, ACC, FLAC and more.
+- [explicit] Detects explicit content using metadata and ML models.
+
 ** Usage
 
-Before this library can be used, it must be initialized. After intialization it can be configured.
-When you are done using it, you must also terminate it.
+Before this library can be used, it must be initialized. After intialization it can then be configured.
+When you are done using it, you should also terminate it.
 
 Below is a simple example of how to use the library:
 #+BEGIN_SRC python
@@ -51,13 +55,34 @@ Below is a simple example of how to use the library:
   asyncio.run(main())
 #+END_SRC
 
-** Dependencies
+** Installation / Dependencies
 
-To use this library you must install the dependencies from requirements.txt
+You can install this library using pip on the libminutia project directory. For example, to install from
+the base directory of the minutia project run:
 
 #+BEGIN_SRC sh
-  pip install -r requirements.txt
+  pip install python_src/libminutia
 #+END_SRC
+
+Some of the features listed above are optional. You will need to instruct pip to include the optional
+dependencies in the installation:
+
+You can install all the dependencies with the following:
+#+BEGIN_SRC sh
+  pip install python_src/libminutia[media,explicit]
+#+END_SRC
+
+or you can choose only the features you want:
+#+BEGIN_SRC sh
+  pip install python_src/libminutia[media]
+#+END_SRC
+
+*** Warnings
+The ~explicit~ flag will install tensorflow which has the following caveats:
+- Increased installation size.
+- When the library is started for the first time it will need to download and cache the ML model.
+- *Tensorflow requires a CPU with AVX support* :: If this requirement is not met the library will
+  crash and show this message: ~Illegal Instruction~.
 
 ** API
 
@@ -74,16 +99,16 @@ To use this library you must install the dependencies from requirements.txt
 
 **** Configuration
 
-|-----------------------------+-----------------------------------------------------------+-----------|
-| Callable                    | Description                                               | Default   |
-|-----------------------------+-----------------------------------------------------------+-----------|
-| set_http_useragent(ua: str) | The useragent to use when making HTTP requests.           |           |
-| set_lang(lang: str)         | The default language to request content in. The value     | "en"      |
-|                             | is passed in HTTP headers such as Accept-Language.        |           |
-| set_max_filesize(i: int)    | The max number of bytes to download for deep inspecion of | 6_553_500 |
-|                             | supported files. Set to <= 0 to disable the feature.      |           |
-| set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.        | 6_553_500 |
-|-----------------------------+-----------------------------------------------------------+-----------|
+|-----------------------------+-----------------------------------------------------------+---------|
+| Callable                    | Description                                               | Default |
+|-----------------------------+-----------------------------------------------------------+---------|
+| set_http_useragent(ua: str) | The useragent to use when making HTTP requests.           |         |
+| set_lang(lang: str)         | The default language to request content in. The value     | "en"    |
+|                             | is passed in HTTP headers such as Accept-Language.        |         |
+| set_max_filesize(i: int)    | The max number of bytes to download for deep inspecion of | 14_600  |
+|                             | supported files. Set to <= 0 to disable the feature.      |         |
+| set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.        | 14_600  |                             |                                                           |         |
+|-----------------------------+-----------------------------------------------------------+---------|
 
 *** libminutia.http
 
@@ -96,6 +121,18 @@ This module is used when working with HTTP/HTTPS links.
 |                                      | given then it will be used instead of the default lang set.  |
 |--------------------------------------+--------------------------------------------------------------|
 
+
+** Developer Notes
+
+The library has an extra installation option ~dev~ to be used during development. It is built using Flit.
+
+You can setup a development environment with all the dependencies by running the following:
+#+BEGIN_SRC sh
+  python -m venv venv
+  source venv/bin/activate
+  pip install flit
+  flit install
+#+END_SRC
 
 ** License
 
