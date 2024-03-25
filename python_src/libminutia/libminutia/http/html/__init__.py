@@ -116,6 +116,8 @@ def is_explicit(document, headers):
     rating = document.find("./head/meta[@name='rating']")
     if rating:
         c = rating.attrib["content"]
-        return (c == "adult") or (c == "RTA-5042-1996-1400-1577-RTA")
+        explicit = (c == "adult") or (c == "RTA-5042-1996-1400-1577-RTA")
+    else:
+        explicit = headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA"
 
-    return headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA"
+    return float(explicit)
