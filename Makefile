@@ -37,6 +37,9 @@ LIBMINUTIA := ${PYTHON_SRC}/libminutia
 PY_FILES := $(shell find ${LIBMINUTIA} -name '*.py')
 LIBMINUTIA_BUILD := ${PRIV_BIN}/libminutia
 
+# Dev recipe
+DEV_DEPS_PATH := /tmp/e03c9cb1-69a8-497b-8066-0f97905adbda_minutia_dev
+
 # Python
 PYTHON := python3
 
@@ -47,16 +50,17 @@ PYTHON := python3
 all: $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
 
 dev: clean $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
-	mkdir /tmp/hi_minutia_dev                                  \
-	&& cd /tmp/hi_minutia_dev                                  \
-	&& git clone https://github.com/hyperimpose/miscellany.git \
-    && cd miscellany                                           \
+	rm -rf ${DEV_DEPS_PATH}
+	mkdir ${DEV_DEPS_PATH}                                      \
+	&& cd ${DEV_DEPS_PATH}                                      \
+	&& git clone https://github.com/hyperimpose/miscellany.git  \
+    && cd miscellany                                            \
     && make SELECT=bencode,polycache
-	erl -pz ebin /tmp/hi_minutia_dev/miscellany/ebin \
-        -eval 'application:start(bencode).'          \
-        -eval 'application:start(polycache).'        \
-        -eval 'application:start(minutia).'          \
-	&& rm -rf /tmp/hi_minutia_dev
+	erl -pz ebin ${DEV_DEPS_PATH}/miscellany/ebin \
+        -eval 'application:start(bencode).'       \
+        -eval 'application:start(polycache).'     \
+        -eval 'application:start(minutia).'       \
+	; rm -rf ${DEV_DEPS_PATH}
 
 
 ${BEAM_FILES}: ${ERL_FILES} | $(EBIN)
