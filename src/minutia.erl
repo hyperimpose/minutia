@@ -128,9 +128,14 @@ reload_port() ->  gen_server:call(?NAME, reload_port).
 %%--------------------------------------------------------------------
 
 set_http_useragent(UA) -> gen_server:call(?NAME, {set_http_useragent, UA}).
+
 set_lang(Lang)         -> gen_server:call(?NAME, {set_lang, Lang}).
-set_max_filesize(Size) -> gen_server:call(?NAME, {set_max_filesize, Size}).
-set_max_htmlsize(Size) -> gen_server:call(?NAME, {set_max_htmlsize, Size}).
+
+set_max_filesize(Size) ->
+    gen_server:call(?NAME, {set_max_filesize, integer_to_binary(Size)}).
+
+set_max_htmlsize(Size) ->
+    gen_server:call(?NAME, {set_max_htmlsize, integer_to_binary(Size)}).
 
 
 %%%===================================================================
