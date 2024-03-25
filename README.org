@@ -21,33 +21,50 @@ runtime:
 - polycache :: https://hyperimpose.org/miscellany
 
 **** Make
-To built the application run:
+To build the application run:
 #+BEGIN_SRC bash
 make
 #+END_SRC
+
+You can also specify the ~LM_OPTS~ flag to install any optional dependencies:
+#+BEGIN_SRC bash
+make LM_OPTS=[explicit,media]
+#+END_SRC
+The available optional dependencies are:
+- explicit :: Use a machine learning model to detect NSFW images.
+              *Read the warning in [[./python_src/libminutia/README.org][libminutia]] before enabling this option.*
+- media :: Inspect file metadata and content to provide extra information.
 
 The above command will create the following directories:
 - ~/ebin~ :: It contains the compiled Erlang code.
 - ~/priv/bin/libminutia~ :: It contains libminutia (written in Python 3) and its dependencies.
 
 Other commands provided are:
-- ~make clean~ :: delete any build artifacts.
+- ~make clean~ :: Delete any build artifacts.
+- ~make dev~ :: Run minutia for development / testing. See below.
 
 **** Run
-How you run minutia mainly depends on your project and its structure. To run the application standalone, follow
-the steps below:
+***** In your own projects
+1. Build and include the ~bencode~ and ~polycache~ dependencies
+2. Make sure that the ~polycache~ application is started before ~minutia~
 
-1. Build ~bencode~ and ~polycache~ and copy the contents of their ~/ebin~ directories to the ~/ebin~ directory
-   created by the [[Make][Make]] step.
-2. From the project root start an erlang shell with: ~erl -pa ./ebin/~
-3. Start all the applications needed (in order):
-   #+BEGIN_SRC erlang
-   application:start(bencode).
-   application:start(polycache).
-   application:start(minutia).
-   #+END_SRC
-4. Proceed to run the example in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
-   a complete description of the library.
+***** For development / testing
+There is a Makefile recipe provided to quickly build and setup minutia for development and interactive testing.
+
+You will need to make sure that:
+- You are on a unix-like environment
+- You have the dependencies listed above (except from the runtime ones)
+- You have git installed (it is used to get the runtime dependencies)
+
+Then on the project root directory run:
+#+BEGIN_SRC bash
+  make dev
+#+END_SRC
+This will download the dependencies, build the project and start an Eshell with minutia.
+You can use the LM_OPTS flag as shown above to install any optional dependencies.
+
+Now you can run the example found in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
+a complete description of the library.
 
 ** Documentation
 
