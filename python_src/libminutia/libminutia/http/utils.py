@@ -98,13 +98,8 @@ def get_explicit(r, path="") -> float:
     if not path:
         return 0.0
 
-    match hparser.mimetype(r.headers):
-        case ("image/bmp"
-              | "image/gif"
-              | "image/jpeg"
-              | "image/tiff"
-              | "image/vnd.microsoft.icon"
-              | "image/webp"):
-            return common.image_explicit_score(path)
-        case _:
-            return 0.0
+    mimetype = hparser.mimetype(r.headers)
+    if "image/" in mimetype:
+        return common.image_explicit_score(path)
+    else:
+        return 0.0
