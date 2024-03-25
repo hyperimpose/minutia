@@ -104,6 +104,8 @@ def bencode(term):
         acc += b"e"
         return acc
 
+    raise TypeError(f"Unexpect term {term} of type {type(term)}")
+
 
 # Commands ===========================================================
 
