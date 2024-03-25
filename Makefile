@@ -44,23 +44,30 @@ DEV_DEPS_PATH := /tmp/e03c9cb1-69a8-497b-8066-0f97905adbda_minutia_dev
 PYTHON := python3
 
 
-.PHONY: all clean dev
+.PHONY: all clean dev dev_all dev_run dev_clean
 
 
 all: $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
 
-dev: clean $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
-	rm -rf ${DEV_DEPS_PATH}
+
+dev: dev_clean dev_all dev_run dev_clean
+
+dev_all: clean $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
 	mkdir ${DEV_DEPS_PATH}                                      \
 	&& cd ${DEV_DEPS_PATH}                                      \
 	&& git clone https://github.com/hyperimpose/miscellany.git  \
     && cd miscellany                                            \
     && make SELECT=bencode,polycache
-	erl -pz ebin ${DEV_DEPS_PATH}/miscellany/ebin \
-        -eval 'application:start(bencode).'       \
-        -eval 'application:start(polycache).'     \
-        -eval 'application:start(minutia).'       \
-	; rm -rf ${DEV_DEPS_PATH}
+
+dev_run:
+	erl -pz ebin ${DEV_DEPS_PATH}/miscellany/ebin         \
+	    -eval 'logger:set_primary_config(level, debug).'  \
+        -eval 'application:start(bencode).'               \
+        -eval 'application:start(polycache).'             \
+        -eval 'application:start(minutia).'
+
+dev_clean: clean
+	rm -rf ${DEV_DEPS_PATH}
 
 
 ${BEAM_FILES}: ${ERL_FILES} | $(EBIN)
