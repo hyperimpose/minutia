@@ -41,10 +41,22 @@ LIBMINUTIA_BUILD := ${PRIV_BIN}/libminutia
 PYTHON := python3
 
 
-.PHONY: all clean
+.PHONY: all clean dev
 
 
 all: $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
+
+dev: clean $(LIBMINUTIA_BUILD) $(APP_SPEC) $(BEAM_FILES)
+	mkdir /tmp/hi_minutia_dev                                  \
+	&& cd /tmp/hi_minutia_dev                                  \
+	&& git clone https://github.com/hyperimpose/miscellany.git \
+    && cd miscellany                                           \
+    && make SELECT=bencode,polycache
+	erl -pz ebin /tmp/hi_minutia_dev/miscellany/ebin \
+        -eval 'application:start(bencode).'          \
+        -eval 'application:start(polycache).'        \
+        -eval 'application:start(minutia).'          \
+	&& rm -rf /tmp/hi_minutia_dev
 
 
 ${BEAM_FILES}: ${ERL_FILES} | $(EBIN)
@@ -55,13 +67,17 @@ ${APP_SPEC}: ${APP_SPEC_SRC} | $(EBIN)
 	sed 's/=version=/${APP_VER}/g' ${APP_SPEC_SRC} > ${APP_SPEC}
 
 
+# Note: LM_OPTS is for installing optional dependencies for libminutia.
+#       It is meant to be specified from the command line when running make.
+#       Examples: make LM_OPTS=[explicit,media]
+#                 make LM_OPTS=[media]
 ${LIBMINUTIA_BUILD}: ${PY_FILES} | $(PRIV) $(PRIV_BIN)
 	mkdir -p $(LIBMINUTIA_BUILD)
 	cp -r ${LIBMINUTIA}/* $(LIBMINUTIA_BUILD)
 	cd $(LIBMINUTIA_BUILD) \
 	&& $(PYTHON) -m venv venv \
 	&& . venv/bin/activate \
-	&& $(PYTHON) -m pip install -r requirements.txt --target $(LIBMINUTIA_BUILD)
+	&& $(PYTHON) -m pip install .${LM_OPTS} --target $(LIBMINUTIA_BUILD)
 
 
 $(EBIN) $(PRIV) $(PRIV_BIN):
