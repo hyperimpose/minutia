@@ -17,6 +17,8 @@
 # --------------------------------------------------------------------
 
 import asyncio
+import contextlib
+import io
 import os
 import traceback
 
@@ -194,7 +196,11 @@ async def dispatch(packet: bytes):
     try:
         fid, args = parse_command(packet)
         fn = FUN_D.get(fid, lambda x: unknown_command(fid, x))
-        await fn(*args)  # type: ignore
+        with (contextlib.redirect_stdout(io.StringIO()) as out,
+              contextlib.redirect_stderr(io.StringIO()) as err):
+            await fn(*args)  # type: ignore
+            log("info", out.getvalue())
+            log("notice", err.getvalue())
     except Exception as e:
         log("emergency", (f":( libminutia crashed -> {e}"
                           f"\n\n{traceback.format_exc()}"))
