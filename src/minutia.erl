@@ -296,6 +296,8 @@ http_got(Payload, #state{worker = Worker} = State) ->
 log_got(Level, Message, State) ->
     case Level of
         <<"debug">>     -> ?LOG_DEBUG(Message);
+        <<"info">>      -> ?LOG_INFO(Message);
+        <<"notice">>      -> ?LOG_NOTICE(Message);
         <<"error">>     -> ?LOG_ERROR(Message);
         <<"emergency">> -> ?LOG_EMERGENCY(Message);
         Else        -> ?LOG_ERROR("[??? log level: ~p]: ~p", [Else, Message])

@@ -199,8 +199,14 @@ async def dispatch(packet: bytes):
         with (contextlib.redirect_stdout(io.StringIO()) as out,
               contextlib.redirect_stderr(io.StringIO()) as err):
             await fn(*args)  # type: ignore
-            log("info", out.getvalue())
-            log("notice", err.getvalue())
+
+            outv = out.getvalue()
+            if outv:
+                log("info", outv)
+
+            errv = err.getvalue()
+            if errv:
+                log("notice", errv)
     except Exception as e:
         log("emergency", (f":( libminutia crashed -> {e}"
                           f"\n\n{traceback.format_exc()}"))
