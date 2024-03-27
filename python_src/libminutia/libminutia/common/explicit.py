@@ -1,3 +1,5 @@
+from contextlib import redirect_stdout
+from os import devnull
 from pathlib import Path
 from typing import BinaryIO
 
@@ -24,7 +26,10 @@ def predict_image(fp: str | Path | BinaryIO) -> float:
     pil_image = Image.open(fp)
     image = n2.preprocess_image(pil_image, n2.Preprocessing.YAHOO)
     inputs = np.expand_dims(image, axis=0)
-    predictions = model.predict(inputs)
-    _sfw_probability, nsfw_probability = predictions[0]
 
-    return float(nsfw_probability)
+    with open(devnull, 'w') as fnull:
+        with redirect_stdout(fnull):
+            predictions = model.predict(inputs)
+
+    _sfw_probability, nsfw_probability = predictions[0]
+    return nsfw_probability
