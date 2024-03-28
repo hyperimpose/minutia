@@ -300,7 +300,7 @@ http_got(Payload, #state{worker = Worker} = State) ->
     Ttl = case Payload of
               #{<<"_ttl">> := Ttl1} when Ttl1 >= 0 ->
                   Ttl1;
-              _Else                              ->
+              _Else                                ->
                   erlang:system_time(seconds) + 300  % 5 minute forced cache
           end,
     polycache:set(Cache, ?LK(Link, Lang), #http{ttl=Ttl, data=Response}),
