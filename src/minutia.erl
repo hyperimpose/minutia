@@ -25,8 +25,8 @@
 
 
 %% API
--export([start_link/0, get/1, get/2, reload_port/0, set_http_useragent/1,
-         set_lang/1, set_max_filesize/1, set_max_htmlsize/1]).
+-export([start_link/0, get/1, get/2, set_http_useragent/1,
+         set_language/1, set_max_filesize/1, set_max_htmlsize/1]).
 -export_types([get_options/1, response/1]).
 
 %% gen_server callbacks
@@ -36,7 +36,6 @@
 
 %% Macros
 -define(NAME, ?MODULE).
-
 -define(LK(Link, Lang), {Link, Lang}).
 
 %% Cache entries
@@ -123,19 +122,10 @@ get_live(Link, Lang, Timeout) ->
 
 %%--------------------------------------------------------------------
 
-reload_port() ->  gen_server:call(?NAME, reload_port).
-
-%%--------------------------------------------------------------------
-
 set_http_useragent(UA) -> gen_server:call(?NAME, {set_http_useragent, UA}).
-
-set_lang(Lang)         -> gen_server:call(?NAME, {set_lang, Lang}).
-
-set_max_filesize(Size) ->
-    gen_server:call(?NAME, {set_max_filesize, integer_to_binary(Size)}).
-
-set_max_htmlsize(Size) ->
-    gen_server:call(?NAME, {set_max_htmlsize, integer_to_binary(Size)}).
+set_language(Lang)     -> gen_server:call(?NAME, {set_language, Lang}).
+set_max_filesize(Size) -> gen_server:call(?NAME, {set_max_filesize, Size}).
+set_max_htmlsize(Size) -> gen_server:call(?NAME, {set_max_htmlsize, Size}).
 
 
 %%%===================================================================
@@ -147,8 +137,7 @@ set_max_htmlsize(Size) ->
 init([]) ->
     process_flag(trap_exit, true),
 
-    Command = ["python3 ", code:priv_dir(minutia), "/bin/libminutia"],
-    Port = open_port({spawn, Command}, [{packet, 2}]),
+    Port = load_port(),
 
     {ok, Cache} = polycache:new(1_000_000),
     ok = persistent_term:put({?MODULE, cache}, Cache),
@@ -162,21 +151,17 @@ init([]) ->
 handle_call({http_get, Link, Lang}, From, State) ->
     http_get(Link, Lang, From, State);
 
-handle_call(reload_port, _From, State) ->
-    {ok, State1} = reload_port(State),
-    {reply, ok, State1};
-
 handle_call({set_http_useragent, UA}, _From, #state{port = Port} = State) ->
-    Port ! {self(), {command, [256, UA]}},
+    set_http_useragent(Port, UA),
     {reply, ok, State};
-handle_call({set_lang, Lang}, _From, #state{port = Port} = State)         ->
-    Port ! {self(), {command, [255, Lang]}},
+handle_call({set_language, Lang}, _From, #state{port = Port} = State)         ->
+    set_language(Port, Lang),
     {reply, ok, State};
 handle_call({set_max_filesize, Size}, _From, #state{port = Port} = State) ->
-    Port ! {self(), {command, [254, Size]}},
+    set_max_filesize(Port, Size),
     {reply, ok, State};
 handle_call({set_max_htmlsize, Size}, _From, #state{port = Port} = State) ->
-    Port ! {self(), {command, [253, Size]}},
+    set_max_htmlsize(Port, Size),
     {reply, ok, State};
 
 handle_call(stop, _From, #state{port = Port} = State) ->
@@ -239,11 +224,25 @@ format_status(_Opt, Status) ->
 %%% Internal functions
 %%%===================================================================
 
+load_port() ->
+    Command = ["python3 ", code:priv_dir(minutia), "/bin/libminutia"],
+    Port = open_port({spawn, Command}, [{packet, 2}]),
+
+    {ok, HttpUseragent} = application:get_env(minutia, http_useragent),
+    {ok, Language} = application:get_env(minutia, language),
+    {ok, MaxFilesize} = application:get_env(minutia, max_filesize),
+    {ok, MaxHtmlsize} = application:get_env(minutia, max_htmlsize),
+    set_http_useragent(Port, HttpUseragent),
+    set_language(Port, Language),
+    set_max_filesize(Port, MaxFilesize),
+    set_max_htmlsize(Port, MaxHtmlsize),
+
+    Port.
+
+
 reload_port(#state{port = Port} = State) ->
     Port ! {self(), close},
-    Command = ["python3 ", code:priv_dir(minutia), "/bin/libminutia"],
-    Port1 = open_port({spawn, Command}, [{packet, 2}]),
-    {ok, State#state{port = Port1}}.
+    {ok, State#state{port = load_port()}}.
 
 
 %%% Outgoing port handlers ===========================================
@@ -259,6 +258,22 @@ http_get(Link, Lang, From, State) ->
             Port ! {self(), {command, [1, Link, 0, Lang]}}
     end,
     {noreply, State}.
+
+
+set_http_useragent(Port, UA) ->
+    Port ! {self(), {command, [255, UA]}}.
+
+
+set_language(Port, Lang) ->
+    Port ! {self(), {command, [254, Lang]}}.
+
+
+set_max_filesize(Port, Size) ->
+    Port ! {self(), {command, [253, integer_to_binary(Size)]}}.
+
+
+set_max_htmlsize(Port, Size) ->
+    Port ! {self(), {command, [252, integer_to_binary(Size)]}}.
 
 
 %%% Incoming port handlers ===========================================

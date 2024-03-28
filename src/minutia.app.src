@@ -22,4 +22,8 @@
   {modules, [minutia_app, minutia_sup, minutia]},
   {registered, [minutia_sup, minutia]},
   {applications, [kernel, stdlib, bencode, polycache]},
-  {mod, {minutia_app, []}}]}.
+  {mod, {minutia_app, []}},
+  {env, [{http_useragent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"},
+         {language, "en"},
+         {max_filesize, 5_000_000},
+         {max_htmlsize, 14_000}]}]}.

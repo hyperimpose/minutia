@@ -183,10 +183,10 @@ async def unknown_command(command, *args):
 # Dispatcher =========================================================
 
 FUN_D = {
-    256: set_http_useragent,
-    255: set_lang,
-    254: set_max_filesize,
-    253: set_max_htmlsize,
+    255: set_http_useragent,
+    254: set_lang,
+    253: set_max_filesize,
+    252: set_max_htmlsize,
 
     1: http_get
 }
