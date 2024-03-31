@@ -2,7 +2,7 @@
 
 * minutia
 
-minutia summurizes the content of various internet services. It uses a URL based interface. Each URL is mapped
+minutia summarizes the content of various internet services. It uses a URL based interface. Each URL is mapped
 to a dictionary that contains data about the resource linked, such as its title, its filesize and more.
 
 https://hyperimpose.org/minutia
@@ -26,9 +26,9 @@ To build the application run:
 make
 #+END_SRC
 
-You can also specify the ~LM_OPTS~ flag to install any optional dependencies:
+You can also specify the ~LM_WITH~ flag to install any optional dependencies:
 #+BEGIN_SRC bash
-make LM_OPTS=[explicit,media]
+make LM_WITH=explicit,media
 #+END_SRC
 The available optional dependencies are:
 - explicit :: Use a machine learning model to detect NSFW images.
@@ -61,7 +61,7 @@ Then on the project root directory run:
   make dev
 #+END_SRC
 This will download the dependencies, build the project and start an Eshell with minutia.
-You can use the LM_OPTS flag as shown above to install any optional dependencies.
+You can use the LM_WITH flag as shown above to install any optional dependencies.
 
 Now you can run the example found in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
 a complete description of the library.
