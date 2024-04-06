@@ -77,7 +77,7 @@ async def get(link: str, lang="") -> ReturnT:
 # ====================================================================
 
 handler_l: list[CustomHandler] = [
-    fourchan.file, lainchan.thread, reddit.comments, twitter.tweet,
+    fourchan.file, lainchan.thread, reddit.handler, twitter.tweet,
     youtube.video, youtube.search
 ]
 

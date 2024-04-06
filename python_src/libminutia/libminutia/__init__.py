@@ -1,10 +1,10 @@
 """libminutia summarizes the content of various internet services"""
 
-__version__ = "0.1"
+__version__ = "0.2"
 
 
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
