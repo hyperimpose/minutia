@@ -2,68 +2,51 @@
 
 * minutia
 
-minutia summarizes the content of various internet services. It uses a URL based interface. Each URL is mapped
+Minutia summarizes the content of various internet services. It uses a URL based interface. Each URL is mapped
 to a dictionary that contains data about the resource linked, such as its title, its filesize and more.
-
-https://hyperimpose.org/minutia
 
 ** Build
 
 **** Dependencies
-To build and run minutia the following dependencies are required: 
-- Python 3.11 or later (must have access to venv and pip)
+To *build* minutia you will need the following:
+- A unix-like environment
+- Python 3.11 or later
+  - venv
+  - pip
 - Erlang/OTP 26 or later
-- GNU make (only needed for building the application)
+  - rebar3
+- GNU make
 
-The following are runtime dependencies. They are not needed to build minutia, but they must be available at
-runtime:
-- bencode :: https://hyperimpose.org/miscellany
-- polycache :: https://hyperimpose.org/miscellany
+To *run* minutia you only need:
+- Python 3.11 or later
+- Erlang/OTP 26 or later
 
-**** Make
-To build the application run:
-#+BEGIN_SRC bash
-make
+**** rebar3
+Minutia is built using rebar3. You can compile it by running: ~$ rebar3 compile~.
+
+or you can include it in your projects as a dependency in rebar.config:
+#+BEGIN_SRC erlang
+  {deps, [%% ... Other dependencies
+         {minutia, {git, "https://github.com/hyperimpose/minutia.git", {branch, "master"}}}]}.
 #+END_SRC
 
-You can also specify the ~LM_WITH~ flag to install any optional dependencies:
-#+BEGIN_SRC bash
-make LM_WITH=explicit,media
-#+END_SRC
-The available optional dependencies are:
+**** Optional features
+Minutia comes with a few optional features that can be enabled by specifying the ~MINUTIA_ENABLE~
+environment variable.
+
+The available options are:
 - explicit :: Use a machine learning model to detect NSFW images.
               *Read the warning in [[./python_src/libminutia/README.org][libminutia]] before enabling this option.*
 - media :: Inspect file metadata and content to provide extra information.
 
-The above command will create the following directories:
-- ~/ebin~ :: It contains the compiled Erlang code.
-- ~/priv/bin/libminutia~ :: It contains libminutia (written in Python 3) and its dependencies.
-
-Other commands provided are:
-- ~make clean~ :: Delete any build artifacts.
-- ~make dev~ :: Run minutia for development / testing. See below.
-
-**** Run
-***** In your own projects
-1. Build and include the ~bencode~ and ~polycache~ dependencies
-2. Make sure that the ~polycache~ application is started before ~minutia~
-
-***** For development / testing
-There is a Makefile recipe provided to quickly build and setup minutia for development and interactive testing.
-
-You will need to make sure that:
-- You are on a unix-like environment
-- You have the dependencies listed above (except from the runtime ones)
-- You have git installed (it is used to get the runtime dependencies)
-
-Then on the project root directory run:
-#+BEGIN_SRC bash
-  make dev
+You can specify more than one options separated by a comma:
+#+BEGIN_SRC sh
+  $ MINUTIA_ENABLE=explicit,media rebar3 compile
 #+END_SRC
-This will download the dependencies, build the project and start an Eshell with minutia.
-You can use the LM_WITH flag as shown above to install any optional dependencies.
 
-Now you can run the example found in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
+*** Run
+You can quickly build and run minutia using: ~$ rebar3 shell~.
+Then you can run the example found in [[Usage][Usage]]. You can also read the [[./doc/user.org][User documentation]] for more examples and
 a complete description of the library.
 
 ** Documentation
@@ -73,7 +56,6 @@ a complete description of the library.
 ** Usage
 
 #+BEGIN_SRC erlang
-  %% Ensure minutia has been started. Example: application:start(minutia).
   %% After minutia has been started you can access resources as follows:
 
   minutia:get("https://hyperimpose.org").

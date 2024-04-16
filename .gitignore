@@ -1,8 +1,26 @@
+# Erlang
+.rebar3
+_build
+_checkouts
+_vendor
+.eunit
+*.o
+*.beam
+*.plt
+*.swp
+*.swo
+.erlang.cookie
+ebin
+log
+erl_crash.dump
+.rebar
+logs
+.idea
+*.iml
+rebar3.crashdump
+*~
+
 # Python
 .mypy_cache/
 __pycache__/
 venv/
-
-# Erlang
-ebin/
-priv/bin/libminutia

@@ -1,5 +1,5 @@
 %%--------------------------------------------------------------------
-%% Copyright (C) 2023 hyperimpose.org
+%% Copyright (C) 2023-2024 hyperimpose.org
 %%
 %% This file is part of minutia.
 %%
@@ -18,7 +18,7 @@
 
 {application, minutia,
  [{description, "Gets info about the resource linked"},
-  {vsn, "=version="},
+  {vsn, semver},
   {modules, [minutia_app, minutia_sup, minutia]},
   {registered, [minutia_sup, minutia]},
   {applications, [kernel, stdlib, bencode, polycache]},
