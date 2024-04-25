@@ -76,7 +76,8 @@ async def file(url: str, _headers):
 
     match await default.get(url):
         case "ok", result:
-            result.update({"explicit": not (await is_worksafe(board))})
+            if not (result.get("explicit", None)):
+                result["explicit"] = float(not (await is_worksafe(board)))
             return "ok", result
         case Else:
             return Else
