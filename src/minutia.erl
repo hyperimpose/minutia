@@ -26,8 +26,10 @@
 
 %% API
 -export([start_link/0, get/1, get/2, set_http_useragent/1,
-         set_language/1, set_max_filesize/1, set_max_htmlsize/1]).
--export_types([get_options/1, response/1]).
+         set_language/1, set_max_filesize/1, set_max_htmlsize/1,
+         reload_port/0]).
+
+-export_types([options/1, response/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -127,6 +129,11 @@ set_language(Lang)     -> gen_server:call(?NAME, {set_language, Lang}).
 set_max_filesize(Size) -> gen_server:call(?NAME, {set_max_filesize, Size}).
 set_max_htmlsize(Size) -> gen_server:call(?NAME, {set_max_htmlsize, Size}).
 
+%%--------------------------------------------------------------------
+
+reload_port() ->
+    gen_server:call(?NAME, reload_port).
+
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -163,6 +170,10 @@ handle_call({set_max_filesize, Size}, _From, #state{port = Port} = State) ->
 handle_call({set_max_htmlsize, Size}, _From, #state{port = Port} = State) ->
     set_max_htmlsize(Port, Size),
     {reply, ok, State};
+
+handle_call(reload_port, _From, State) ->
+    {ok, State1} = reload_port(State),
+    {ok, State1};
 
 handle_call(stop, _From, #state{port = Port} = State) ->
     Port ! {self(), close},
