@@ -173,7 +173,7 @@ handle_call({set_max_htmlsize, Size}, _From, #state{port = Port} = State) ->
 
 handle_call(reload_port, _From, State) ->
     {ok, State1} = reload_port(State),
-    {ok, State1};
+    {reply, ok, State1};
 
 handle_call(stop, _From, #state{port = Port} = State) ->
     Port ! {self(), close},
