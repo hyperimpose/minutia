@@ -34,7 +34,7 @@ async def handler(link: str, headers):
 # Thread
 # ====================================================================
 
-COMMENTS = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:reddit.com)/r/.*/comments/.*")  # noqa
+COMMENTS = re.compile(r"(?i:https?://)?(?i:(www|old)\.)?(?i:reddit.com)/r/.*/comments/.*")  # noqa
 
 
 async def comments(link: str, headers):
