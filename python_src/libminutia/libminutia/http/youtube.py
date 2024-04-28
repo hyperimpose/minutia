@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -23,16 +23,25 @@ import urllib.parse
 from . import utils
 
 
+async def handler(link: str, headers):
+    return (
+        await video(link)
+        or await search(link, headers)
+        or await fallback(link)
+        or False
+    )
+
+
 # ====================================================================
 # Video
 # ====================================================================
 
 LIVE = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:youtube\.com)/live/.*")
-VID = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:youtube\.com)/watch\?v=.*")
+VID = re.compile(r"(?i:https?://)?(?i:(www|music)\.)?(?i:youtube\.com)/watch\?v=.*")  # noqa
 VID_SHORT = re.compile(r"(?i:https?://)?(?i:youtu\.be)/.*")
 
 
-async def video(url: str, _headers):
+async def video(url: str):
     """Return information about a youtube video."""
 
     if not (re.fullmatch(VID, url) or re.fullmatch(VID_SHORT, url)
@@ -139,4 +148,33 @@ def s_vid_info(v):
     return {
         "short_url": short_url, "name": name, "date": date, "views": views,
         "channel": channel, "duration": duration, "yt_id": yt_id
+    }
+
+
+# ====================================================================
+# Fallback
+# ====================================================================
+
+YT = re.compile(r"(?i:https?://)?(?i:.*\.youtube\.com)/.*")
+
+
+async def fallback(link: str):
+    if not re.fullmatch(YT, link):
+        return False
+
+    u = urllib.parse.urlparse(link)
+
+    p = u.path[1:].split("/")
+    if not p or not p[0]:       # https://*.youtube.com/
+        t = "YouTube"
+    elif p[0].startswith("@"):  # Channels
+        t = p[0] + " " + " ".join(p[1:]).title() + " - YouTube"
+    else:                       # Rest
+        t = " ".join(p).title() + " - YouTube"
+
+    return "ok", {
+        "@": "http:html",
+        "t": t,
+
+        "explicit": 0.0  # No info on explicity
     }
