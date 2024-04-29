@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -48,3 +48,13 @@ class CustomHTTPLainchan(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertGreater(r[1]["_ttl"], 0)
+
+    async def test_mod_thread(self):
+        u = "https://lainchan.org/mod.php?/%CE%A9/res/73638.html#76881"
+        r = await libminutia.http.get(u)
+        self.assertEqual(r[0], "ok")
+
+        self.assertEqual(r[1]["@"], "http:html")
+        self.assertEqual(r[1]["t"], "Login")
+
+        self.assertEqual(r[1]["explicit"], 0.0)

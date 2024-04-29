@@ -29,9 +29,13 @@ from . import utils
 # ====================================================================
 
 THREAD = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:lainchan\.org)/.*/res/.*")
+MOD = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:lainchan\.org)/mod.php.*")
 
 
 async def thread(url: str, _headers):
+    if re.fullmatch(MOD, url):  # Ignore moderator paths
+        return False
+
     if not re.fullmatch(THREAD, url):
         return False
 
