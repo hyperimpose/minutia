@@ -1,5 +1,5 @@
 %%--------------------------------------------------------------------
-%% Copyright (C) 2023 hyperimpose.org
+%% Copyright (C) 2023-2024 hyperimpose.org
 %%
 %% This file is part of minutia.
 %%
