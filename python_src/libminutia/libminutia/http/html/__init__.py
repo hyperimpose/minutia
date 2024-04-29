@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -57,41 +57,41 @@ async def get_title(data, headers, encoding="utf-8"):
 
 
 def _get_title(document):
-    # <meta> title
-    title = document.find("./head/meta[@name='title']")
-    if title is not None:
-        return title.attrib["content"]
-
     # HTML <title>
-    title = document.find("./head/title")
+    title = document.find(".//title")
     if title is not None:
         return title.text
 
+    # <meta> title
+    title = document.find(".//meta[@name='title']")
+    if title is not None:
+        return title.attrib["content"]
+
     # oEmbed title
-    title = document.find("./head/link[@type='application/json+oembed']")
+    title = document.find(".//link[@type='application/json+oembed']")
     if title is not None:
         return title.attrib["title"]
 
-    title = document.find("./head/link[@type='application/xml+oembed']")
+    title = document.find(".//link[@type='application/xml+oembed']")
     if title is not None:
         return title.attrib["title"]
 
-    title = document.find("./head/link[@type='text/xml+oembed']")
+    title = document.find(".//link[@type='text/xml+oembed']")
     if title is not None:
         return title.attrib["title"]
 
     # Open Graph
-    title = document.find("./head/meta[@property='og:title']")
+    title = document.find(".//meta[@property='og:title']")
     if title is not None:
         return title.attrib["content"]
 
     # Twitter Cards
-    title = document.find("./head/meta[@name='twitter:title']")
+    title = document.find(".//meta[@name='twitter:title']")
     if title is not None:
         return title.attrib["content"]
 
     # Dublin Core
-    title = document.find("./head/meta[@name='DC.Title']")
+    title = document.find(".//meta[@name='DC.Title']")
     if title is not None:
         return title.attrib["content"]
 
@@ -113,7 +113,7 @@ def _get_title(document):
 
 
 def is_explicit(document, headers):
-    rating = document.find("./head/meta[@name='rating']")
+    rating = document.find(".//meta[@name='rating']")
     if rating:
         c = rating.attrib["content"]
         explicit = (c == "adult") or (c == "RTA-5042-1996-1400-1577-RTA")
