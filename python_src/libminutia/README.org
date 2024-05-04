@@ -2,13 +2,10 @@
 
 * libminutia
 
-*This libray is an internal part of minutia and its API may change without maintaining backwards compatibility*
+*This library is an internal part of minutia and its API may change without maintaining backwards compatibility*
 
 libminutia handles the data and metadata retrieval part of minutia. It can be used as a standalone library in
 Python projects.
-
-The ~__main__.py~ file is independent from libminutia. It implements the necessary interface for this library
-to also be used as an Erlang port.
 
 ** Features
 
@@ -24,7 +21,7 @@ to also be used as an Erlang port.
 
 ** Usage
 
-Before this library can be used, it must be initialized. After intialization it can then be configured.
+Before this library can be used, it must be initialized. After initialization it can then be configured.
 When you are done using it, you should also terminate it.
 
 Below is a simple example of how to use the library:
@@ -55,34 +52,53 @@ Below is a simple example of how to use the library:
   asyncio.run(main())
 #+END_SRC
 
-** Installation / Dependencies
+** Installation
 
-You can install this library using pip on the libminutia project directory. For example, to install from
-the base directory of the minutia project run:
-
+You can install this library using pip:
 #+BEGIN_SRC sh
-  pip install python_src/libminutia
+  pip install "git+https://github.com/hyperimpose/minutia.git@master#subdirectory=python_src/libminutia"
 #+END_SRC
 
-Some of the features listed above are optional. You will need to instruct pip to include the optional
-dependencies in the installation:
+*** Optional Dependencies
+Some of the features listed above are optional. You can tell pip which optional features you want installed by
+using the syntax ~[media,explicit]~ after the installation url:
 
-You can install all the dependencies with the following:
 #+BEGIN_SRC sh
-  pip install python_src/libminutia[media,explicit]
+  pip install "git+https://github.com/hyperimpose/minutia.git@master#subdirectory=python_src/libminutia"[media]
 #+END_SRC
 
-or you can choose only the features you want:
-#+BEGIN_SRC sh
-  pip install python_src/libminutia[media]
-#+END_SRC
+The availability of those dependencies is checked once when libminutia is imported.
+When an optional dependency is missing the library will log a warning to inform you about the fact.
 
-*** Warnings
+Table of available optional features:
+|----------+------------------------------------------------------------------------------|
+| Name     | Description                                                                  |
+|----------+------------------------------------------------------------------------------|
+| media    | Extract extra information from various media files.                          |
+| explicit | Detect explicit content using a Machine Learning model. (see [[Warnings][warnings]] first) |
+|----------+------------------------------------------------------------------------------|
+
+**** Warnings
 The ~explicit~ flag will install tensorflow which has the following caveats:
 - Increased installation size.
 - When the library is started for the first time it will need to download and cache the ML model.
 - *Tensorflow requires a CPU with AVX support* :: If this requirement is not met the library will
   crash and show this message: ~Illegal Instruction~.
+
+*** Runtime Dependencies
+Extra features may be enabled based on the availability of other programs. These programs can be installed on
+the host OS separately from libminutia.
+
+The availability of those dependencies is checked once when libminutia is imported.
+When a runtime dependency is missing the library will log a warning to inform you about the fact. 
+
+Table of available runtime dependencies:
+|---------+----------------------------------------------------------------------------------------|
+| Name    | Description                                                                            |
+|---------+----------------------------------------------------------------------------------------|
+| ffmpeg  | Only useful with the ~explicit~ feature enabled. Enables explicit detection of videos. |
+| ffprobe | MUST be installed with ~ffmpeg~.                                                       |
+|---------+----------------------------------------------------------------------------------------|
 
 ** API
 
@@ -99,16 +115,17 @@ The ~explicit~ flag will install tensorflow which has the following caveats:
 
 **** Configuration
 
-|-----------------------------+-----------------------------------------------------------+---------|
-| Callable                    | Description                                               | Default |
-|-----------------------------+-----------------------------------------------------------+---------|
-| set_http_useragent(ua: str) | The useragent to use when making HTTP requests.           |         |
-| set_lang(lang: str)         | The default language to request content in. The value     | "en"    |
-|                             | is passed in HTTP headers such as Accept-Language.        |         |
-| set_max_filesize(i: int)    | The max number of bytes to download for deep inspecion of | 14_600  |
-|                             | supported files. Set to <= 0 to disable the feature.      |         |
-| set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.        | 14_600  |                             |                                                           |         |
-|-----------------------------+-----------------------------------------------------------+---------|
+|-----------------------------+------------------------------------------------------------+---------|
+| Callable                    | Description                                                | Default |
+|                             |                                                            |         |
+|-----------------------------+------------------------------------------------------------+---------|
+| set_http_useragent(ua: str) | The useragent to use when making HTTP requests.            |         |
+| set_lang(lang: str)         | The default language to request content in. The value      | "en"    |
+|                             | is passed in HTTP headers such as Accept-Language.         |         |
+| set_max_filesize(i: int)    | The max number of bytes to download for deep inspecion of  | 14_600  |
+|                             | supported media files. Set to <= 0 to disable the feature. |         |
+| set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.         | 14_600  |
+|-----------------------------+------------------------------------------------------------+---------|
 
 *** libminutia.http
 
@@ -121,6 +138,13 @@ This module is used when working with HTTP/HTTPS links.
 |                                      | given then it will be used instead of the default lang set.  |
 |--------------------------------------+--------------------------------------------------------------|
 
+*** Logging
+
+libminutia is using the ~logging~ module to log various events. Everything is logged under the ~libminutia~
+logger.
+
+When the library is imported it might log information about the availability of various features. If you want
+to capture those you must configure logging in your application before importing libminutia.
 
 ** Developer Notes
 
@@ -133,6 +157,18 @@ You can setup a development environment with all the dependencies by running the
   pip install flit
   flit install
 #+END_SRC
+
+*** Project Structure
+libminutia is split in two parts:
+1) a standalone Python library (referred to as libminutia)
+2) a Python application implementing an Erlang port
+
+The Erlang port is made up from the files ~__main__.py~ and ~erlang.py~. It only depends on libminutia and the
+Python standard library.
+
+Everything else implements the standalone library. The library is meant to be installed using pip.
+~pyproject.toml~ creates an installable Python package for just the library (it does not include the Erlang
+port).
 
 ** License
 
