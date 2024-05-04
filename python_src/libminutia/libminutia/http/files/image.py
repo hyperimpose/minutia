@@ -16,6 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import logging
 import struct
 import tempfile
 
@@ -23,6 +24,8 @@ from libminutia import common, config
 from libminutia.http import hparser, utils
 
 import imagesize  # type: ignore
+
+logger = logging.getLogger("libminutia")
 
 try:
     from PIL import (
@@ -32,8 +35,7 @@ try:
     )
 except ImportError:
     _has_pillow = False
-    import warnings
-    warnings.warn("[optional:media] image partially available", ImportWarning)
+    logger.warning("[libminutia] image: limited availability")
 else:
     _has_pillow = True
 
@@ -60,11 +62,7 @@ async def handle1(r, fp, is_complete=False):
 
     if is_complete:
         width, height, artist, title = info_pillow(fp)
-        if common.is_avail_explicit():
-            fp.seek(0)
-            explicit = utils.get_explicit(r, fp)
-        else:
-            explicit = utils.get_explicit(r)
+        explicit = utils.get_explicit(r, fp)
     else:
         width, height = info_imagesize(fp)
         explicit = utils.get_explicit(r)
