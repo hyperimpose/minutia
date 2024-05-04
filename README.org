@@ -17,7 +17,7 @@ To *build* minutia you will need the following:
   - rebar3
 - GNU make
 
-To *run* minutia you only need:
+To *run* minutia you need:
 - Python 3.11 or later
 - Erlang/OTP 26 or later
 
@@ -43,6 +43,10 @@ You can specify more than one options separated by a comma:
 #+BEGIN_SRC sh
   $ MINUTIA_ENABLE=explicit,media rebar3 compile
 #+END_SRC
+
+***** explicit
+If you enable the explicit option, you may want to also install ~ffmpeg~ and ~ffprobe~ on your OS. If they are
+available then minutia will also be able to detect NSFW videos.
 
 *** Run
 You can quickly build and run minutia using: ~$ rebar3 shell~.
