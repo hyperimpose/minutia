@@ -97,8 +97,8 @@ async def old(link: str, headers):
 
     u = urlparse(link)
 
-    for path in excluded_paths:
-        if re.fullmatch(path, u.path):
+    for expath in excluded_paths:
+        if re.fullmatch(expath, u.path):
             return
 
     if u.path.find("/gallery") == 0:

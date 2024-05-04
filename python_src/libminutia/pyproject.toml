@@ -25,6 +25,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "flake8",
     "mypy",
     "types-html5lib",
     "types-Pillow"

@@ -1,8 +1,8 @@
 [{<<"bencode">>,
   {git,"https://github.com/hyperimpose/bencode.git",
-       {ref,"f64e73002db689b8729777e5c3edd73dc2735dde"}},
+       {ref,"11abfbcc21f7302baaee369307b6c305ae03782d"}},
   0},
  {<<"polycache">>,
   {git,"https://github.com/hyperimpose/polycache.git",
-       {ref,"5c08ee5f4b0160cda5ada97c100ad791f4166bb6"}},
+       {ref,"c7c5ada4167f18f06163be41b636471954000a68"}},
   0}].

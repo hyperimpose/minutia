@@ -112,7 +112,7 @@ async def search(url: str, headers: dict = {}):
     item_lists = map(lambda x: x["itemSectionRenderer"]["contents"], sections)
     items = [i for item_list in item_lists for i in item_list]  # flatten
     videos = filter(lambda x: "videoRenderer" in x, items)  # filter ads/shorts
-    videos = list(map(lambda x: s_vid_info(x["videoRenderer"]), videos))
+    results = list(map(lambda x: s_vid_info(x["videoRenderer"]), videos))
 
     t = urllib.parse.unquote_plus(url.split("=", 1)[1]) + " - YouTube"
 
@@ -120,7 +120,7 @@ async def search(url: str, headers: dict = {}):
         "@": "http:youtube:search",
         "t": t,
 
-        "results": videos,
+        "results": results,
 
         "_ttl": utils.cache(r.headers)
     }
