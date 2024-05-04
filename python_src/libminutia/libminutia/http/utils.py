@@ -101,5 +101,7 @@ def get_explicit(r, path="") -> float:
     mimetype = hparser.mimetype(r.headers)
     if "image/" in mimetype:
         return common.image_explicit_score(path)
+    elif "video/" in mimetype:
+        return common.video_explicit_score(path)
     else:
         return 0.0

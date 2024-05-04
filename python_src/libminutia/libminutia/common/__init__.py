@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -52,9 +52,9 @@ def convert_time(time_ms):
     return f"{h:02d}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
 
 
-def is_avail_explicit() -> bool:
-    return explicit._has_explicit
-
-
 def image_explicit_score(path: str) -> float:
     return explicit.predict_image(path)
+
+
+def video_explicit_score(path: str, duration: int = 0) -> float:
+    return explicit.predict_video(path, duration=duration)

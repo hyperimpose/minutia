@@ -1,7 +1,12 @@
 from contextlib import redirect_stdout
-from os import devnull
 from pathlib import Path
 from typing import BinaryIO
+import logging
+import os
+import subprocess
+import tempfile
+
+logger = logging.getLogger("libminutia")
 
 try:
     import numpy as np
@@ -9,10 +14,19 @@ try:
     from PIL import Image
 except ImportError:
     _has_explicit = False
-    import warnings
-    warnings.warn("[optional:explicit] unavailable", ImportWarning)
+    logger.warning("[libminutia] explicit: unavailable")
 else:
     _has_explicit = True
+
+try:
+    a = subprocess.run(["ffmpeg", "-version"], capture_output=True)
+    b = subprocess.run(["ffprobe", "-version"], capture_output=True)
+    _has_ffmpeg = (a.returncode == 0) and (b.returncode == 0)
+except FileNotFoundError:
+    _has_ffmpeg = False
+finally:
+    if not _has_ffmpeg:
+        logger.warning("[libminutia] ffmpeg: unavailable")
 
 
 if _has_explicit:
@@ -27,9 +41,52 @@ def predict_image(fp: str | Path | BinaryIO) -> float:
     image = n2.preprocess_image(pil_image, n2.Preprocessing.YAHOO)
     inputs = np.expand_dims(image, axis=0)
 
-    with open(devnull, 'w') as fnull:
+    with open(os.devnull, 'w') as fnull:
         with redirect_stdout(fnull):
             predictions = model.predict(inputs)
 
     _sfw_probability, nsfw_probability = predictions[0]
     return nsfw_probability.item()
+
+
+def predict_video(inpath: str | Path, duration: int = 0) -> float:
+    """duration is in seconds"""
+
+    if (not _has_explicit) or (not _has_ffmpeg):
+        return 0.0
+
+    if duration:
+        halftime = duration / 2
+    else:
+        halftime = _video_duration(inpath) / 2
+
+    with tempfile.NamedTemporaryFile() as outfp:
+        r = subprocess.run(
+            ["ffmpeg",
+             "-y",  # automatically overwrite output
+             "-hide_banner", "-loglevel", "warning",
+             "-ss", str(halftime),  # -ss before the input is faster
+             "-i", inpath,
+             "-frames:v", "1",
+             "-update", "1",  # Only one image
+             outfp.name],
+            stdout=subprocess.DEVNULL,
+            capture_output=True
+        )
+        if r.returncode:  # non-zero means error
+            return 0.0
+
+        return predict_image(outfp.name)
+
+
+def _video_duration(path: str | Path) -> float:
+    r = subprocess.run(
+        ["ffprobe",
+         "-v", "error",
+         "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1",
+         path],
+        capture_output=True,
+        text=True
+    )
+    return float(r.stdout.strip())
