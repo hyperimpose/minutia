@@ -16,17 +16,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import logging
 import tempfile
 
 from libminutia import common, config
 from libminutia.http import fallback, hparser, utils
 
+logger = logging.getLogger("libminutia")
+
 try:
     from pymediainfo import MediaInfo  # type: ignore
 except ImportError:
     _has_mediainfo = False
-    import warnings
-    warnings.warn("[optional:media] audio unavailable", ImportWarning)
+    logger.warning("[libminutia] audio: unavailable")
 else:
     _has_mediainfo = True
 

@@ -16,17 +16,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import logging
 import tempfile
 
 from libminutia import common, config
 from libminutia.http import fallback, hparser, utils
 
+logger = logging.getLogger("libminutia")
+
 try:
     from pymediainfo import MediaInfo  # type: ignore
 except ImportError:
     _has_mediainfo = False
-    import warnings
-    warnings.warn("[optional:media] video unavailable", ImportWarning)
+    logger.warning("[libminutia] video: unavailable")
 else:
     _has_mediainfo = True
 
@@ -52,8 +54,9 @@ async def handle(r):
             fp.write(chunk)
 
         fp.seek(0)
-        title, duration, width, height = get_mediainfo(fp.name)
+        title, duration_ms, width, height = get_mediainfo(fp.name)
 
+    duration = common.convert_time(duration_ms)
     name = hparser.filename(r.headers)
     size = hparser.filesize(r.headers)
     mt = hparser.mimetype(r.headers)
@@ -93,7 +96,7 @@ def get_mediainfo(path: str):
             height = track.height
         if not duration:
             try:
-                duration = common.convert_time(track.duration)
+                duration = int(track.duration)
             except TypeError:
                 duration = None
 

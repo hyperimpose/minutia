@@ -16,20 +16,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import logging
 import tempfile
+
+from libminutia import config
+from libminutia.common import convert_size
+from libminutia.http import fallback, hparser, utils
+
+logger = logging.getLogger("libminutia")
 
 try:
     import fitz  # type: ignore
 except ImportError:
     _has_fitz = False
-    import warnings
-    warnings.warn("[optional:media] mupdf unavailable", ImportWarning)
+    logger.warning("[libminutia] mupdf: unavailable")
 else:
     _has_fitz = True
-
-from libminutia import config
-from libminutia.common import convert_size
-from libminutia.http import fallback, hparser, utils
 
 
 MIME_TO_TYPE = {
