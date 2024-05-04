@@ -54,9 +54,12 @@ async def handle(r):
             fp.write(chunk)
 
         fp.seek(0)
-        title, duration_ms, width, height = get_mediainfo(fp.name)
+        title, duration, width, height = get_mediainfo(fp.name)
 
-    duration = common.convert_time(duration_ms)
+        fp.seek(0)
+        explicit = utils.get_explicit(r, fp.name, duration=duration)
+
+    duration = common.convert_time(duration)
     name = hparser.filename(r.headers)
     size = hparser.filesize(r.headers)
     mt = hparser.mimetype(r.headers)
@@ -70,7 +73,7 @@ async def handle(r):
         "t": t,
 
         "duration": duration,
-        "explicit": utils.get_explicit(r),
+        "explicit": explicit,
         "filename": name,
         "height": height,
         "mimetype": mt,

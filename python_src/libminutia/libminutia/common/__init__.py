@@ -56,5 +56,5 @@ def image_explicit_score(path: str) -> float:
     return explicit.predict_image(path)
 
 
-def video_explicit_score(path: str, duration: int = 0) -> float:
+def video_explicit_score(path: str, duration=0) -> float:
     return explicit.predict_video(path, duration=duration)

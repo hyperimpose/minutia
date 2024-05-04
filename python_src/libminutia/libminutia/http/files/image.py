@@ -20,7 +20,7 @@ import logging
 import struct
 import tempfile
 
-from libminutia import common, config
+from libminutia import config
 from libminutia.http import hparser, utils
 
 import imagesize  # type: ignore

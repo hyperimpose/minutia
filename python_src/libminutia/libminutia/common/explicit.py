@@ -49,14 +49,12 @@ def predict_image(fp: str | Path | BinaryIO) -> float:
     return nsfw_probability.item()
 
 
-def predict_video(inpath: str | Path, duration: int = 0) -> float:
-    """duration is in seconds"""
-
+def predict_video(inpath: str | Path, duration=0) -> float:
     if (not _has_explicit) or (not _has_ffmpeg):
         return 0.0
 
     if duration:
-        halftime = duration / 2
+        halftime = duration / 1000 / 2  # duration is in milliseconds
     else:
         halftime = _video_duration(inpath) / 2
 

@@ -91,7 +91,7 @@ def _cache_control(headers):
 # Explicit
 # ====================================================================
 
-def get_explicit(r, path="") -> float:
+def get_explicit(r, path="", duration=0) -> float:
     if r.headers.get("rating", "") == "RTA-5042-1996-1400-1577-RTA":
         return 1.0
 
@@ -102,6 +102,6 @@ def get_explicit(r, path="") -> float:
     if "image/" in mimetype:
         return common.image_explicit_score(path)
     elif "video/" in mimetype:
-        return common.video_explicit_score(path)
+        return common.video_explicit_score(path, duration=duration)
     else:
         return 0.0
