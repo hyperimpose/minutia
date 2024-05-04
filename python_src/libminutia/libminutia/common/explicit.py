@@ -68,7 +68,6 @@ def predict_video(inpath: str | Path, duration=0) -> float:
              "-frames:v", "1",
              "-update", "1",  # Only one image
              outfp.name],
-            stdout=subprocess.DEVNULL,
             capture_output=True
         )
         if r.returncode:  # non-zero means error
