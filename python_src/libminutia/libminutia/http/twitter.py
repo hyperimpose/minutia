@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -28,7 +28,7 @@ from . import utils
 # Thread
 # ====================================================================
 
-TWEET = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:twitter.com)/.*/status/.*")
+TWEET = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:(twitter|x).com)/.*/status/.*")  # noqa
 
 
 async def tweet(url: str, _headers):
