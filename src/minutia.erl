@@ -40,9 +40,6 @@
 -define(NAME, ?MODULE).
 -define(LK(Link, Lang), {Link, Lang}).
 
-%% Cache entries
--record(http, {ttl, data}).
-
 %% Gen Server state
 -record(link, {key, froms=[]}).
 -record(state, {port, worker}).
@@ -105,14 +102,9 @@ get(LinkAny, Opts) ->
 
 get_with_cache(Link, Lang, Timeout) ->
     Cache = persistent_term:get({?MODULE, cache}),
-
-    Now = erlang:system_time(seconds),
-
     case polycache:get(Cache, ?LK(Link, Lang)) of
-        {ok, #http{ttl=Ttl, data=Data}} when Ttl > Now ->
-            Data;
-        _Miss                                          ->
-            get_live(Link, Lang, Timeout)
+        {ok, Hit} -> Hit;
+        _Miss     -> get_live(Link, Lang, Timeout)
     end.
 
 get_live(Link, Lang, Timeout) ->
@@ -314,7 +306,7 @@ http_got(Payload, #state{worker = Worker} = State) ->
               _Else                                ->
                   erlang:system_time(seconds) + 300  % 5 minute forced cache
           end,
-    polycache:set(Cache, ?LK(Link, Lang), #http{ttl=Ttl, data=Response}),
+    polycache:set(Cache, ?LK(Link, Lang), Response, #{ttl => Ttl}),
 
     {noreply, State}.
 

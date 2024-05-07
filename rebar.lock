@@ -4,5 +4,5 @@
   0},
  {<<"polycache">>,
   {git,"https://github.com/hyperimpose/polycache.git",
-       {ref,"c7c5ada4167f18f06163be41b636471954000a68"}},
+       {ref,"abc09b6df6eb5cbe84050193924e95c3af96ba38"}},
   0}].
