@@ -1,0 +1,47 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "minutia"
+dynamic = ["version", "description"]
+authors = [{name = "hyperimpose.org", email = "hyperimpose@protonmail.com"}]
+requires-python = ">=3.11"
+license = {file = "COPYING"}
+keywords = ["minutia", "minutiae", "hyperimpose", "url", "api", "metadata", "link", "title"]
+classifiers = [
+            "Development Status :: 4 - Beta",
+            "Intended Audience :: Developers",
+            "License :: OSI Approved :: GNU Affero General Public License v3",
+            "Topic :: Communications :: Chat",
+            "Topic :: Internet",
+            "Topic :: Internet :: WWW/HTTP"
+]
+dependencies = [
+             "httpx",
+             "html5lib",
+             "imagesize"
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8",
+    "mypy",
+    "types-html5lib",
+    "types-Pillow"
+]
+media = [
+      "pymediainfo",
+      "PyMuPDF",
+      "pillow"
+]
+explicit = [
+         "opennsfw2",
+         "tensorflow",
+         "pillow",
+         "numpy"
+]
+
+[project.urls]
+Home = "https://hyperimpose.org/minutia"
+Source = "https://github.com/hyperimpose/minutia"
