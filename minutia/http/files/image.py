@@ -25,7 +25,7 @@ from minutia.http import hparser, utils
 
 import imagesize  # type: ignore
 
-logger = logging.getLogger("libminutia")
+logger = logging.getLogger("minutia")
 
 try:
     from PIL import (
@@ -35,7 +35,7 @@ try:
     )
 except ImportError:
     _has_pillow = False
-    logger.warning("[libminutia] image: limited availability")
+    logger.warning("[minutia] image: limited availability")
 else:
     _has_pillow = True
 
@@ -62,10 +62,10 @@ async def handle1(r, fp, is_complete=False):
 
     if is_complete:
         width, height, artist, title = info_pillow(fp)
-        explicit = utils.get_explicit(r, fp)
+        explicit = await utils.get_explicit(r, fp.name)
     else:
         width, height = info_imagesize(fp)
-        explicit = utils.get_explicit(r)
+        explicit = await utils.get_explicit(r)
         artist = None
         title = None
 

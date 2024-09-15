@@ -22,13 +22,13 @@ import tempfile
 from minutia import common, config
 from minutia.http import fallback, hparser, utils
 
-logger = logging.getLogger("libminutia")
+logger = logging.getLogger("minutia")
 
 try:
     from pymediainfo import MediaInfo  # type: ignore
 except ImportError:
     _has_mediainfo = False
-    logger.warning("[libminutia] video: unavailable")
+    logger.warning("[minutia] video: unavailable")
 else:
     _has_mediainfo = True
 
@@ -57,7 +57,7 @@ async def handle(r):
         title, duration, width, height = get_mediainfo(fp.name)
 
         fp.seek(0)
-        explicit = utils.get_explicit(r, fp.name, duration=duration)
+        explicit = await utils.get_explicit(r, fp.name, duration=duration)
 
     duration = common.convert_time(duration)
     name = hparser.filename(r.headers)

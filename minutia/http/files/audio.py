@@ -22,13 +22,13 @@ import tempfile
 from minutia import common, config
 from minutia.http import fallback, hparser, utils
 
-logger = logging.getLogger("libminutia")
+logger = logging.getLogger("minutia")
 
 try:
     from pymediainfo import MediaInfo  # type: ignore
 except ImportError:
     _has_mediainfo = False
-    logger.warning("[libminutia] audio: unavailable")
+    logger.warning("[minutia] audio: unavailable")
 else:
     _has_mediainfo = True
 
@@ -77,7 +77,7 @@ async def handle(r):
         "artist": artist,
         "date": date,
         "duration": duration,
-        "explicit": utils.get_explicit(r),
+        "explicit": await utils.get_explicit(r),
         "filename": name,
         "mimetype": mt,
         "size": size,

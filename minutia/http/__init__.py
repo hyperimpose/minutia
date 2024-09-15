@@ -65,11 +65,11 @@ async def get(link: str, lang="") -> ReturnT:
         return ("error", "The page isn’t redirecting properly", e)
     except httpx.HTTPError as e:
         return ("error", "Can't complete the request", e)
-    except Exception as e:
-        # Unknown exceptions indicate an unexpected error, possibly
-        # a bug with libminutia.
-        # We return an empty user message to indicate this to the caller.
-        return ("error", "", e)
+    # except Exception as e:
+    #     # Unknown exceptions indicate an unexpected error, possibly
+    #     # a bug with libminutia.
+    #     # We return an empty user message to indicate this to the caller.
+    #     return ("error", "", e)
 
 
 # ====================================================================

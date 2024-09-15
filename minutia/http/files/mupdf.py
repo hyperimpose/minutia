@@ -23,13 +23,13 @@ from minutia import config
 from minutia.common import convert_size
 from minutia.http import fallback, hparser, utils
 
-logger = logging.getLogger("libminutia")
+logger = logging.getLogger("minutia")
 
 try:
     import fitz  # type: ignore
 except ImportError:
     _has_fitz = False
-    logger.warning("[libminutia] mupdf: unavailable")
+    logger.warning("[minutia] mupdf: unavailable")
 else:
     _has_fitz = True
 
@@ -97,7 +97,7 @@ async def handle(r):
                 "@": "http:mupdf",
                 "t": ", ".join(parts),
 
-                "explicit": utils.get_explicit(r),
+                "explicit": await utils.get_explicit(r),
                 "mimetype": mimetype,
                 "pages": doc.page_count,
                 "size": size,

@@ -38,7 +38,7 @@ async def handle(r):
         "@": "http:fallback",
         "t": t,
 
-        "explicit": utils.get_explicit(r),
+        "explicit": await utils.get_explicit(r),
         "filename": filename,
         "mimetype": mimetype,
         "size": size

@@ -23,7 +23,8 @@ __version__ = "0.2"
 
 import httpx
 
-from minutia import config, http
+from minutia import common, config, http
+from services import explicit
 
 
 # ====================================================================
@@ -36,6 +37,7 @@ async def init():
 
 async def terminate():
     await http.utils.client.aclose()
+    await setup_explicit_unix_socket("")
 
 
 # ====================================================================
@@ -56,3 +58,17 @@ def set_max_filesize(i: int):
 
 def set_http_useragent(ua: str):
     config.http_useragent = ua
+
+
+# ====================================================================
+# Setup
+# ====================================================================
+
+async def setup_explicit_unix_socket(path: str):
+    if path:
+        common.explicit.client = explicit.UnixClient(path)
+        await common.explicit.client.connect()
+    else:
+        if common.explicit.client:
+            await common.explicit.client.close()
+            common.explicit.client = None

@@ -52,9 +52,9 @@ def convert_time(time_ms):
     return f"{h:02d}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
 
 
-def image_explicit_score(path: str) -> float:
-    return explicit.predict_image(path)
+async def image_explicit_score(path: str) -> float:
+    return await explicit.predict_image(path)
 
 
-def video_explicit_score(path: str, duration=0) -> float:
-    return explicit.predict_video(path, duration=duration)
+async def video_explicit_score(path: str, duration=0) -> float:
+    return await explicit.predict_video(path, duration=duration)
