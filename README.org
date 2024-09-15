@@ -82,15 +82,15 @@ The library is able to detect explicit content using a Machine Learning (ML) mod
 To run the ML model, tensorflow and other dependencies need to be installed which has the following caveats:
 - Increased installation size.
 - When the code is started for the first time it will need to download and cache the ML model.
-- *Tensorflow requires a CPU with AVX support* :: If this requirement is not met the program will
-  crash and show this message: ~Illegal Instruction~.
+- *Tensorflow requires a CPU with AVX support*
+  - If this requirement is not met the program will crash and show this message: ~Illegal Instruction~.
 
 To avoid those issues this feature is provided through a secondary service. The library can then be configured,
 at runtime, to connect to that service over a unix socket.
 
 An example workflow to use this feature:
-- Do NOT use the ~explicit~ flag when installing minutia as a library for your project. :: 
-  This keeps the size of the library relatively small.
+- Do NOT use the ~explicit~ flag when installing minutia as a library for your project.
+  - This keeps the size of the library relatively small.
 - Create a new venv, clone this repo and install the library with the ~explicit~ flag.
   - Install with: ~pip install ./minutia[explicit]~
   - Run ~python minutia explicit -u /tmp/your_path_here.sock~ to start the service.
