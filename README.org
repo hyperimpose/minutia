@@ -1,11 +1,10 @@
 #+OPTIONS: ^:nil
 
-* libminutia
+* minutia
 
-*This library is an internal part of minutia and its API may change without maintaining backwards compatibility*
-
-libminutia handles the data and metadata retrieval part of minutia. It can be used as a standalone library in
-Python projects.
+minutia is a library for summarizing the content of various internet services.
+It uses a URL based interface. Each URL is mapped to a dictionary that contains data about the resource linked,
+such as its title, its filesize and more.
 
 ** Features
 
@@ -27,18 +26,18 @@ When you are done using it, you should also terminate it.
 Below is a simple example of how to use the library:
 #+BEGIN_SRC python
   import asyncio
-  import libminutia
+  import minutia
 
   async def main():
       # Initialize
-      await libminutia.init()
+      await minutia.init()
 
       # Configure
-      libminutia.set_lang("en-GB")
-      libminutia.set_max_filesize(6_553_500)  # 6.5 MB in bytes
+      minutia.set_lang("en-GB")
+      minutia.set_max_filesize(6_553_500)  # 6.5 MB in bytes
 
       # Use the library
-      "ok", data = await libminutia.http.get("http://hyperimpose.org")
+      "ok", data = await minutia.http.get("http://hyperimpose.org")
 
       # `data' will be a dictionary like:
       # {
@@ -47,7 +46,7 @@ Below is a simple example of how to use the library:
       # }
 
       # Terminate
-      await libminutia.terminate()
+      await minutia.terminate()
 
   asyncio.run(main())
 #+END_SRC
@@ -56,53 +55,65 @@ Below is a simple example of how to use the library:
 
 You can install this library using pip:
 #+BEGIN_SRC sh
-  pip install "git+https://github.com/hyperimpose/libminutia.git@master"
+  pip install "git+https://github.com/hyperimpose/minutia.git@master"
 #+END_SRC
 
-*** Optional Dependencies
-Some of the features listed above are optional. You can tell pip which optional features you want installed by
-using the syntax ~[media,explicit]~ after the installation url:
+** Optional Dependencies
+Some of the features listed above are optional. You can tell pip which optional features you want installed
+by using the syntax ~[media,explicit]~ after the installation url:
 
 #+BEGIN_SRC sh
-  pip install "git+https://github.com/hyperimpose/libminutia.git@master"[media]
+  pip install "git+https://github.com/hyperimpose/minutia.git@master"[media]
 #+END_SRC
 
-The availability of those dependencies is checked once when libminutia is imported.
+The availability of those dependencies is checked once when minutia is imported.
 When an optional dependency is missing the library will log a warning to inform you about the fact.
 
 Table of available optional features:
-|----------+------------------------------------------------------------------------------|
-| Name     | Description                                                                  |
-|----------+------------------------------------------------------------------------------|
-| media    | Extract extra information from various media files.                          |
-| explicit | Detect explicit content using a Machine Learning model. (see [[Warnings][warnings]] first) |
-|----------+------------------------------------------------------------------------------|
+|----------+-----------------------------------------------------|
+| Name     | Description                                         |
+|----------+-----------------------------------------------------|
+| media    | Extract extra information from various media files. |
+| explicit | See [[Explicit][explicit]].                                       |
+|----------+-----------------------------------------------------|
 
-**** Warnings
-The ~explicit~ flag will install tensorflow which has the following caveats:
+*** Explicit
+The library is able to detect explicit content using a Machine Learning (ML) model.
+To run the ML model, tensorflow and other dependencies need to be installed which has the following caveats:
 - Increased installation size.
-- When the library is started for the first time it will need to download and cache the ML model.
-- *Tensorflow requires a CPU with AVX support* :: If this requirement is not met the library will
+- When the code is started for the first time it will need to download and cache the ML model.
+- *Tensorflow requires a CPU with AVX support* :: If this requirement is not met the program will
   crash and show this message: ~Illegal Instruction~.
 
-*** Runtime Dependencies
-Extra features may be enabled based on the availability of other programs. These programs can be installed on
-the host OS separately from libminutia.
+To avoid those issues this feature is provided through a secondary service. The library can then be configured,
+at runtime, to connect to that service over a unix socket.
 
-The availability of those dependencies is checked once when libminutia is imported.
+An example workflow to use this feature:
+- Do NOT use the ~explicit~ flag when installing minutia as a library for your project. :: 
+  This keeps the size of the library relatively small.
+- Create a new venv, clone this repo and install the library with the ~explicit~ flag.
+  - Install with: ~pip install ./minutia[explicit]~
+  - Run ~python minutia explicit -u /tmp/your_path_here.sock~ to start the service.
+    - CAUTION: the file path given after the -u option will be replaced on startup.
+- After initializing the library in your code setup the explicit client:
+  - Add this code: ~await minutia.setup_explicit_unix_socket("/tmp/your_path_here.sock")~
+
+**** Video support
+The explicit service can provide video support. Some extra runtime dependencies are needed for this to work.
+The availability of those dependencies is checked once when the service is started.
 When a runtime dependency is missing the library will log a warning to inform you about the fact. 
 
-Table of available runtime dependencies:
-|---------+----------------------------------------------------------------------------------------|
-| Name    | Description                                                                            |
-|---------+----------------------------------------------------------------------------------------|
-| ffmpeg  | Only useful with the ~explicit~ feature enabled. Enables explicit detection of videos. |
-| ffprobe | MUST be installed with ~ffmpeg~.                                                       |
-|---------+----------------------------------------------------------------------------------------|
+Table of extra runtime dependencies:
+|---------+---------------------------------------|
+| Name    | Description                           |
+|---------+---------------------------------------|
+| ffmpeg  | Enables explicit detection of videos. |
+| ffprobe | MUST be installed with ~ffmpeg~.      |
+|---------+---------------------------------------|
 
 ** API
 
-*** libminutia
+*** minutia
 
 **** Initialization / Termination
 
@@ -117,7 +128,6 @@ Table of available runtime dependencies:
 
 |-----------------------------+------------------------------------------------------------+---------|
 | Callable                    | Description                                                | Default |
-|                             |                                                            |         |
 |-----------------------------+------------------------------------------------------------+---------|
 | set_http_useragent(ua: str) | The useragent to use when making HTTP requests.            |         |
 | set_lang(lang: str)         | The default language to request content in. The value      | "en"    |
@@ -127,7 +137,16 @@ Table of available runtime dependencies:
 | set_max_htmlsize(i: int)    | The max bytes to download when parsing HTML pages.         | 14_600  |
 |-----------------------------+------------------------------------------------------------+---------|
 
-*** libminutia.http
+**** Setup
+
+|---------------------------------------------+-------------------------------------------------+---------|
+| Callable                                    | Description                                     | Default |
+|---------------------------------------------+-------------------------------------------------+---------|
+| async setup_explicit_unix_socket(path: str) | Path to the explicit service. When called a new | ""      |
+|                                             | client is started. "" disables the feature.     |         |
+|---------------------------------------------+-------------------------------------------------+---------|
+
+*** minutia.http
 
 This module is used when working with HTTP/HTTPS links.
 
@@ -140,11 +159,11 @@ This module is used when working with HTTP/HTTPS links.
 
 *** Logging
 
-libminutia is using the ~logging~ module to log various events. Everything is logged under the ~libminutia~
+minutia is using the ~logging~ module to log various events. Everything is logged under the ~minutia~
 logger.
 
 When the library is imported it might log information about the availability of various features. If you want
-to capture those you must configure logging in your application before importing libminutia.
+to capture those you must configure logging in your application before importing minutia.
 
 ** Developer Notes
 
@@ -159,20 +178,18 @@ You can setup a development environment with all the dependencies by running the
 #+END_SRC
 
 *** Project Structure
-libminutia is split in two parts:
-1) a standalone Python library (referred to as libminutia)
-2) a Python application implementing an Erlang port
+This project provides both a library for use in other python projects and standalone services to provide
+extra features to the library.
 
-The Erlang port is made up from the files ~__main__.py~ and ~erlang.py~. It only depends on libminutia and the
-Python standard library.
-
-Everything else implements the standalone library. The library is meant to be installed using pip.
-~pyproject.toml~ creates an installable Python package for just the library (it does not include the Erlang
-port).
+#+BEGIN_SRC
+  /minutia            The library to import in other programs
+  /services/explicit  The explicit service
+  /__main__.py        Magic module to start the services from the CLI
+#+END_SRC
 
 ** License
 
-libminutia is licensed under the [[https://www.gnu.org/licenses/agpl-3.0.html][GNU Affero General Public License version 3 (AGPLv3)]].
+minutia is licensed under the [[https://www.gnu.org/licenses/agpl-3.0.html][GNU Affero General Public License version 3 (AGPLv3)]].
 #+BEGIN_CENTER
 [[https://www.gnu.org/graphics/agplv3-with-text-162x68.png]]
 #+END_CENTER
