@@ -24,7 +24,6 @@ __version__ = "0.3"
 import httpx
 
 from minutia import common, config, http
-from services import explicit
 
 
 # ====================================================================
@@ -66,7 +65,7 @@ def set_http_useragent(ua: str):
 
 async def setup_explicit_unix_socket(path: str):
     if path:
-        common.explicit.client = explicit.UnixClient(path)
+        common.explicit.client = common.explicit.UnixClient(path)
         await common.explicit.client.connect()
     else:
         if common.explicit.client:
