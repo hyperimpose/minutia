@@ -5,15 +5,16 @@ import struct
 
 from pathlib import Path
 
-from . import explicit, unix_helpers
+from minutia.common.explicit import unix_read, unix_packet
+from . import explicit
 
 
 logger = logging.getLogger(__name__)
 
 
-# -----------------------------------------------------------------------------
+# ====================================================================
 # Server
-# -----------------------------------------------------------------------------
+# ====================================================================
 
 async def init(path: str | Path, debug=False):
     if debug:
@@ -33,7 +34,7 @@ async def init(path: str | Path, debug=False):
 async def _client_handler(reader, writer):
     logger.info("Client connected")
     while True:
-        inp = await unix_helpers.read(reader)
+        inp = await unix_read(reader)
         if not inp:
             logger.info("Client disconnected")
             break
@@ -43,7 +44,7 @@ async def _client_handler(reader, writer):
                 path_s = path.decode("utf-8")
                 perc = explicit.predict_image(path_s)
                 perc_b = struct.pack(">f", perc)
-                out = unix_helpers.packet(1, perc_b)
+                out = unix_packet(1, perc_b)
                 writer.write(out)
                 await writer.drain()
                 logger.debug("predict_image(%s) -> %s", path_s, perc)
@@ -51,7 +52,7 @@ async def _client_handler(reader, writer):
                 path_s = path.decode("utf-8")
                 perc = explicit.predict_video(path_s)
                 perc_b = struct.pack(">f", perc)
-                out = unix_helpers.packet(1, perc_b)
+                out = unix_packet(1, perc_b)
                 writer.write(out)
                 await writer.drain()
                 logger.debug("predict_video(%s) -> %s", path_s, perc)

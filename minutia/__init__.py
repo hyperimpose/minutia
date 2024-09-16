@@ -1,6 +1,6 @@
-"""libminutia summarizes the content of various internet services"""
+"""minutia summarizes the content of various internet services"""
 
-__version__ = "0.2"
+__version__ = "0.3"
 
 
 # --------------------------------------------------------------------
