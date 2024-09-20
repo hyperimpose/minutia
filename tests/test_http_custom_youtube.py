@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023-2024 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -49,6 +49,13 @@ class CustomHttpYouTube(unittest.IsolatedAsyncioTestCase):
         self.assertIn("<iframe ", r[1]["html"])
 
         self.assertGreater(r[1]["_ttl"], 0)
+
+    async def test_m_video(self):
+        u = "https://m.youtube.com/watch?v=rdwz7QiG0lk"
+        r = await minutia.http.get(u)
+
+        self.assertEqual(r[0], "ok")
+        self.assertEqual(r[1]["@"], "http:youtube:video")
 
     async def test_search(self):
         u = "https://www.youtube.com/results?search_query=Kelly+Moran+Helix"
