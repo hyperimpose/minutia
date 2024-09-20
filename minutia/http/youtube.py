@@ -37,7 +37,7 @@ async def handler(link: str, headers):
 # ====================================================================
 
 LIVE = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:youtube\.com)/live/.*")
-VID = re.compile(r"(?i:https?://)?(?i:(www|music)\.)?(?i:youtube\.com)/watch\?v=.*")  # noqa
+VID = re.compile(r"(?i:https?://)?(?i:(www|m|music)\.)?(?i:youtube\.com)/watch\?v=.*")  # noqa
 VID_SHORT = re.compile(r"(?i:https?://)?(?i:youtu\.be)/.*")
 
 
