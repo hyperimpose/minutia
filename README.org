@@ -74,7 +74,7 @@ Table of available optional features:
 | Name     | Description                                         |
 |----------+-----------------------------------------------------|
 | media    | Extract extra information from various media files. |
-| explicit | See [[#explicit][explicit]].                                       |
+| explicit | See [[#explicit][Explicit]].                                       |
 |----------+-----------------------------------------------------|
 
 *** Explicit
