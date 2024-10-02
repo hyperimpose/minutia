@@ -17,7 +17,6 @@
 # --------------------------------------------------------------------
 
 import logging
-import mimetypes
 import tempfile
 
 from minutia import common, config
@@ -46,16 +45,7 @@ async def handle(r):
     if (not length) or (length > config.max_filesize):
         return await fallback.handle(r)
 
-    name = hparser.filename(r.headers)
-    size = hparser.filesize(r.headers)
-    mt = hparser.mimetype(r.headers)
-
-    # This is needed because the explicit service will use FFmpeg to extract
-    # video frames for processing.
-    # FFmpeg uses the filename to find the video format.
-    ext = mimetypes.guess_extension(mt, strict=False) or ""
-
-    with tempfile.NamedTemporaryFile(suffix=ext) as fp:
+    with tempfile.NamedTemporaryFile() as fp:
         filesize = 0
         async for chunk in r.aiter_raw():
             filesize += len(chunk)
@@ -66,12 +56,13 @@ async def handle(r):
         fp.seek(0)
         title, duration, width, height = get_mediainfo(fp.name)
 
-        explicit = 0.0
-        if ext:
-            fp.seek(0)
-            explicit = await utils.get_explicit(r, fp.name, duration=duration)
+        fp.seek(0)
+        explicit = await utils.get_explicit(r, fp.name, duration=duration)
 
     duration = common.convert_time(duration)
+    name = hparser.filename(r.headers)
+    size = hparser.filesize(r.headers)
+    mt = hparser.mimetype(r.headers)
 
     t = f"{title} ({duration}), {mt}, {name}, {width}x{height}, Size: {size}"
     t = t.replace("None ", "")  # No title

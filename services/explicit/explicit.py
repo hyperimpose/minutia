@@ -46,27 +46,24 @@ def predict_video(inpath: str | Path, duration=0) -> float:
         logger.warning("ffmpeg: unavailable. Returning 0.0")
         return 0.0
 
-    if duration:
-        halftime = duration / 1000 / 2  # duration is in milliseconds
-    else:
-        halftime = _video_duration(inpath) / 2
+    if not duration:
+        duration = _video_duration(inpath)
 
-    with tempfile.NamedTemporaryFile() as outfp:
-        r = subprocess.run(
-            ["ffmpeg",
-             "-y",  # automatically overwrite output
-             "-hide_banner", "-loglevel", "warning",
-             "-ss", str(halftime),  # -ss before the input is faster
-             "-i", inpath,
-             "-frames:v", "1",
-             "-update", "1",  # Only one image
-             outfp.name],
-            capture_output=True
-        )
-        if r.returncode:  # non-zero means error
-            return 0.0
+    times = [  # duration is in milliseconds
+        duration / 1000 * 0.25,
+        duration / 1000 * 0.50,
+        duration / 1000 * 0.75
+    ]
+    acc = [0.0]
 
-        return predict_image(outfp.name)
+    # We need to add a suffix so that FFmpeg knows what format to output
+    with tempfile.NamedTemporaryFile(suffix=".png") as outfp:
+        for time in times:
+            if _video_frame(inpath, outfp.name, time):
+                return max(acc)
+            acc.append(predict_image(outfp.name))
+
+    return max(acc)
 
 
 def _video_duration(path: str | Path) -> float:
@@ -80,3 +77,18 @@ def _video_duration(path: str | Path) -> float:
         text=True
     )
     return float(r.stdout.strip())
+
+
+def _video_frame(inp: str, outp: str, at: int | float) -> int:
+    r = subprocess.run(
+        ["ffmpeg",
+         "-y",  # automatically overwrite output
+         "-hide_banner", "-loglevel", "warning",
+         "-ss", str(at),  # -ss before the input is faster
+         "-i", inp,
+         "-frames:v", "1",
+         "-update", "1",  # Only one image
+         outp],
+        capture_output=True
+    )
+    return r.returncode  # non-zero means error
