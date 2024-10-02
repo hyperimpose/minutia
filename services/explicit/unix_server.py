@@ -52,7 +52,7 @@ async def _client_handler(reader, writer):
                 path_s = path.decode("utf-8")
                 perc = explicit.predict_video(path_s)
                 perc_b = struct.pack(">f", perc)
-                out = unix_packet(1, perc_b)
+                out = unix_packet(2, perc_b)
                 writer.write(out)
                 await writer.drain()
                 logger.debug("predict_video(%s) -> %s", path_s, perc)

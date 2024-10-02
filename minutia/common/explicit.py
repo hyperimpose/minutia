@@ -101,8 +101,9 @@ class UnixClient:
             case x, reply if x == cmd:
                 return struct.unpack(">f", reply)[0]
             case other:
-                logger.error("[minutia:explicit] Unexpected response: %s",
-                             other,
+                logger.error("[minutia:explicit] Unexpected response %s"
+                             " for file %s using command %s",
+                             other, path, cmd,
                              stack_info=True)
                 return 0.0
 
