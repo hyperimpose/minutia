@@ -46,13 +46,14 @@ def predict_video(inpath: str | Path, duration=0) -> float:
         logger.warning("ffmpeg: unavailable. Returning 0.0")
         return 0.0
 
-    if not duration:
+    if duration:
+        duration = duration / 1000  # duration is in milliseconds
+    else:
         duration = _video_duration(inpath)
 
-    times = [  # duration is in milliseconds
-        duration / 1000 * 0.25,
-        duration / 1000 * 0.50,
-        duration / 1000 * 0.75
+    times = [
+        duration * 0.5,
+        duration * 0.75
     ]
     acc = [0.0]
 
@@ -60,7 +61,7 @@ def predict_video(inpath: str | Path, duration=0) -> float:
     with tempfile.NamedTemporaryFile(suffix=".png") as outfp:
         for time in times:
             if _video_frame(inpath, outfp.name, time):
-                return max(acc)
+                return max(acc)  # stop on error
             acc.append(predict_image(outfp.name))
 
     return max(acc)
