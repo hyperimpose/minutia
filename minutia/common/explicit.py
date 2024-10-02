@@ -64,6 +64,7 @@ class UnixClient:
         self.path = path
         self.r = None
         self.w = None
+        self.lock = asyncio.Lock()
 
     async def connect(self):
         try:
@@ -72,10 +73,12 @@ class UnixClient:
             logger.error("[minutia:explicit] Socket error", exc_info=True)
 
     async def predict_image(self, path: str) -> float:
-        return await self._cmd_path(1, path)
+        async with self.lock:
+            return await self._cmd_path(1, path)
 
     async def predict_video(self, path: str) -> float:
-        return await self._cmd_path(2, path)
+        async with self.lock:
+            return await self._cmd_path(2, path)
 
     async def _cmd_path(self, cmd: int, path: str) -> float:
         if not self.r or not self.w:
