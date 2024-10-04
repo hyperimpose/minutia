@@ -25,7 +25,7 @@ from minutia.http import (
     # Default handler
     default,
     # Custom handlers
-    fourchan, lainchan, reddit, twitter, youtube
+    bing, duckduckgo, fourchan, google, lainchan, reddit, twitter, youtube
 )
 
 # ====================================================================
@@ -77,8 +77,8 @@ async def get(link: str, lang="") -> ReturnT:
 # ====================================================================
 
 handler_l: list[CustomHandler] = [
-    fourchan.file, lainchan.thread, reddit.handler, twitter.tweet,
-    youtube.handler
+    bing.search, duckduckgo.search, fourchan.file, google.search,
+    lainchan.thread, reddit.handler, twitter.tweet, youtube.handler
 ]
 
 
