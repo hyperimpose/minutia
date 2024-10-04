@@ -65,7 +65,7 @@ class IrcBotScience(unittest.IsolatedAsyncioTestCase):
         u = "https://irc-bot-science.clsr.net/internet.gz"
         r = await minutia.http.get(u)
 
-        t = "the-internet.gz, application/x-gzip; charset=binary, Size: 1.1 EB"
+        t = "the-internet.gz, application/x-gzip, Size: 1.1 EB"
         self.assertEqual(r[0], "ok")
         self.assertEqual(r[1]["t"], t)
 
