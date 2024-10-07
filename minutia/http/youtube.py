@@ -18,9 +18,13 @@
 
 import re
 import json
+import logging
 import urllib.parse
 
 from . import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 async def handler(link: str, headers):
@@ -134,9 +138,20 @@ def s_vid_info(v):
     try:
         date = v["publishedTimeText"]["simpleText"]
     except KeyError:
-        date = False
-    duration = v["lengthText"]["simpleText"]
-    views = v["viewCountText"]["simpleText"]
+        date = ""
+    # For unknown reasons sometimes we cannot find the duration.
+    try:
+        duration = v["lengthText"]["simpleText"]
+    except KeyError:
+        logger.warning("[minutia:youtube] Unable to find duration in %s", v)
+        duration = ""
+    # For unknown reasons sometimes we cannot find the views.
+    try:
+        views = v["viewCountText"]["simpleText"]
+    except KeyError:
+        logger.warning("[minutia:youtube] Unable to find views in %s", v)
+        views = ""
+
     channel = v["ownerText"]["runs"][0]["text"]
 
     return {
