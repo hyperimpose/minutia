@@ -139,17 +139,18 @@ def s_vid_info(v):
         date = v["publishedTimeText"]["simpleText"]
     except KeyError:
         date = ""
-    # For unknown reasons sometimes we cannot find the duration.
+    # Sometimes lives do not have a duration, or a view counter.
+    #
+    # It has also been observed that sometimes a live will show up as
+    # being ongoing in the search (where we get this info from), but
+    # when opened it will have ended.
     try:
         duration = v["lengthText"]["simpleText"]
     except KeyError:
-        logger.warning("[minutia:youtube] Unable to find duration in %s", v)
         duration = ""
-    # For unknown reasons sometimes we cannot find the views.
     try:
         views = v["viewCountText"]["simpleText"]
     except KeyError:
-        logger.warning("[minutia:youtube] Unable to find views in %s", v)
         views = ""
 
     channel = v["ownerText"]["runs"][0]["text"]
