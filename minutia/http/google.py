@@ -39,15 +39,14 @@ async def search(url: str, headers):
 
     title = d.find(".//title").text
 
-    snippet = {}
+    answer = {}
     bc = d.find(".//block-component")
     if bc is not None:
         span = bc.find(".//span")
-        if span is not None:
-            snippet["text"] = "".join(span.itertext())
+        if span is not None:  # No point in having a link without the text
+            answer["text"] = "".join(span.itertext())
             a = bc.find(".//a")
-            if a is not None:
-                snippet["link"] = a.attrib["href"]
+            answer["link"] = a.attrib["href"] if a is not None else ""
 
     results = []
     div = d.find(".//div[@id='search']")
@@ -61,7 +60,7 @@ async def search(url: str, headers):
     return "ok", {
         "@": "http:google:search",
         "t": title,
-        "snippet": snippet or False,
-        "results": results,
+        "answer": answer,    # may be empty -> {}
+        "results": results,  # may be empty -> []
         "_ttl": utils.cache(r.headers)
     }

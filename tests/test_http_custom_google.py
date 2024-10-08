@@ -38,7 +38,7 @@ class CustomHTTPGoogle(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(r[1]["t"], str)
         self.assertGreater(len(r[1]["t"]), 0)
 
-        self.assertFalse(r[1]["snippet"])  # Depends on the query
+        self.assertFalse(r[1]["answer"])  # Depends on the query
 
         self.assertIsInstance(r[1]["results"], list)
         self.assertGreater(len(r[1]["results"]), 0)
@@ -48,13 +48,13 @@ class CustomHTTPGoogle(unittest.IsolatedAsyncioTestCase):
 
         self.assertGreater(r[1]["_ttl"], 0)
 
-    async def test_search_snippet(self):
+    async def test_search_answer(self):
         u = "https://www.google.com/search?q=how+many+verses+in+greek+anthem"
         r = await minutia.http.get(u)
 
         self.assertEqual(r[0], "ok")
         self.assertEqual(r[1]["@"], "http:google:search")
 
-        self.assertIsInstance(r[1]["snippet"], dict)
-        self.assertIsInstance(r[1]["snippet"]["text"], str)
-        self.assertIsInstance(r[1]["snippet"]["link"], str)
+        self.assertIsInstance(r[1]["answer"], dict)
+        self.assertIsInstance(r[1]["answer"]["text"], str)
+        self.assertIsInstance(r[1]["answer"]["link"], str)

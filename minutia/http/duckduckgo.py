@@ -61,17 +61,17 @@ async def search(url: str, headers):
     for h2 in d.findall(".//h2[@class='result__title']"):
         titles.append("".join(h2.itertext()).strip())
 
-    captions = []
+    descriptions = []
     for a in d.findall(".//a[@class='result__snippet']"):
-        captions.append("".join(a.itertext()).strip())
+        descriptions.append("".join(a.itertext()).strip())
 
     results = []
-    if len(links) == len(titles) == len(captions):
-        for link, t, c in zip(links, titles, captions):
+    if len(links) == len(titles) == len(descriptions):
+        for link, t, c in zip(links, titles, descriptions):
             results.append({
                 "link": link,
                 "title": t,
-                "caption": c
+                "description": c
             })
     else:
         logger.error("[minutia] Incomplete results for %s", url)

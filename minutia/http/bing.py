@@ -45,7 +45,7 @@ async def search(url: str, headers):
         results.append({
             "link": a.attrib["href"],
             "title": "".join(a.itertext()),
-            "caption": "".join(li.find(".//p").itertext())[3:]
+            "description": "".join(li.find(".//p").itertext())[3:]
         })
 
     return "ok", {

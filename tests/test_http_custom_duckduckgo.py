@@ -44,6 +44,6 @@ class CustomHTTPDuckDuckGo(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(r[1]["results"][0], dict)
         self.assertIsInstance(r[1]["results"][0]["title"], str)
         self.assertIsInstance(r[1]["results"][0]["link"], str)
-        self.assertIsInstance(r[1]["results"][0]["caption"], str)
+        self.assertIsInstance(r[1]["results"][0]["description"], str)
 
         self.assertGreater(r[1]["_ttl"], 0)
