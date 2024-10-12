@@ -29,7 +29,7 @@ class CustomHTTPBing(unittest.IsolatedAsyncioTestCase):
         await minutia.terminate()
 
     async def test_search(self):
-        u = "https://www.bing.com/search?q=test"
+        u = "https://bing.com/search?q=test"
         r = await minutia.http.get(u)
 
         self.assertEqual(r[0], "ok")

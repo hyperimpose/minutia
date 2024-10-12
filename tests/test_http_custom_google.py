@@ -29,7 +29,7 @@ class CustomHTTPGoogle(unittest.IsolatedAsyncioTestCase):
         await minutia.terminate()
 
     async def test_search(self):
-        u = "https://www.google.com/search?q=test"
+        u = "https://google.com/search?q=test"
         r = await minutia.http.get(u)
 
         self.assertEqual(r[0], "ok")

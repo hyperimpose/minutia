@@ -34,7 +34,7 @@ async def search(url: str, headers):
     if not re.fullmatch(SEARCH, url):
         return False
 
-    r = await utils.client.get(url, headers=headers)
+    r = await utils.client.get(url, headers=headers, follow_redirects=True)
     d = html5lib.parse(r.text, namespaceHTMLElements=False)
 
     title = d.find(".//title").text
