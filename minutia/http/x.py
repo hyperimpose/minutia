@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023-2024 hyperimpose.org
+# Copyright (C) 2023-2025 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -28,12 +28,17 @@ from . import utils
 # Thread
 # ====================================================================
 
-TWEET = re.compile(r"(?i:https?://)?(?i:www\.)?(?i:(twitter|x).com)/.*/status/.*")  # noqa
+STATUS = re.compile(r"(?i:https?://)?(?i:(www|mobile)\.)?(?i:(twitter|x).com)/.+/status/.*")  # noqa
+PROFILE = re.compile(r"(?i:https?://)?(?i:(www|mobile)\.)?(?i:(twitter|x).com)/[^/]+/?")  # noqa
 
 
-async def tweet(url: str, _headers):
-    if not re.fullmatch(TWEET, url):
+async def handler(url: str, _headers):
+    if not re.fullmatch(STATUS, url) and not re.fullmatch(PROFILE, url):
         return False
+
+    # For tweets remove everything after the X ID, so the oembed API works
+    # IDs are integers according to https://docs.x.com/fundamentals/x-ids
+    url = re.sub(r'(/status/\d+).*', r'\1', url)
 
     u = f"https://publish.twitter.com/oembed?url={url}"
     r = await utils.client.get(u)
@@ -41,13 +46,13 @@ async def tweet(url: str, _headers):
 
     html = j["html"]
     d = html5lib.parse(html, namespaceHTMLElements=False)
-    tweet_l = ET.tostringlist(d, encoding="unicode", method="text")
-    tweet_l = [x.strip() for x in tweet_l]
-    tweet = " ".join(tweet_l).strip()
+    text_l = ET.tostringlist(d, encoding="unicode", method="text")
+    text_l = [x.strip() for x in text_l]
+    text = " ".join(text_l).strip()
 
     return "ok", {
-        "@": "http:twitter:tweet",
-        "t": tweet,
+        "@": "http:x",
+        "t": text,
 
         "_ttl": utils.cache(r.headers)
     }

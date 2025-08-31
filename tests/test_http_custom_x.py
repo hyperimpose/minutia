@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023 hyperimpose.org
+# Copyright (C) 2023, 2025 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -21,20 +21,20 @@ import unittest
 import minutia  # type: ignore
 
 
-class CustomHTTPTwitter(unittest.IsolatedAsyncioTestCase):
+class CustomHTTPX(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await minutia.init()
 
     async def asyncTearDown(self):
         await minutia.terminate()
 
-    async def test_tweet(self):
+    async def test_status(self):
         u = "https://twitter.com/Google/status/1224134123519868932"
         r = await minutia.http.get(u)
 
         self.assertEqual(r[0], "ok")
 
-        self.assertEqual(r[1]["@"], "http:twitter:tweet")
+        self.assertEqual(r[1]["@"], "http:x")
         self.assertEqual(
             r[1]["t"],
             ("A love story about the moments that matter most, told with a"
@@ -43,3 +43,18 @@ class CustomHTTPTwitter(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertGreater(r[1]["_ttl"], 0)
+
+    async def test_profile(self):
+        u = "https://twitter.com/Google"
+        r = await minutia.http.get(u)
+
+        self.assertEqual(r[0], "ok")
+        self.assertEqual(r[1]["@"], "http:x")
+
+    async def test_photo(self):
+        u = "https://x.com/Google/status/1948434032645050665/photo/1"
+
+        r = await minutia.http.get(u)
+
+        self.assertEqual(r[0], "ok")
+        self.assertEqual(r[1]["@"], "http:x")
