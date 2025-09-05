@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023-2024 hyperimpose.org
+# Copyright (C) 2023-2025 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -20,14 +20,16 @@ import html5lib
 import xml.etree.ElementTree as ET
 
 from minutia import common, config
-from . import heurestics
+from . import heurestics, override
 
 
 async def handle(r):
+    max_htmlsize = override.max_htmlsize(str(r.url)) or config.max_htmlsize
+
     data = b""
     async for chunk in r.aiter_bytes():
         data += chunk
-        if len(data) > config.max_htmlsize:
+        if len(data) > max_htmlsize:
             break
 
     return await get_title(data, r.headers, encoding=r.encoding)
