@@ -62,17 +62,17 @@ def _cache_control(headers):
 
     ttl = 0
 
-    if "max-age" in d:
+    if max_age := d.get("max-age"):
         try:
-            ttl += int(d["max-age"])
+            ttl += int(max_age)
         except ValueError:
             pass
 
     # Because revalidation is not supported we just increment
-    # the ttl by a small part of this directive's value
-    if "stale-while-revalidate" in d:
+    # the ttl by a fraction of this directive's value
+    if stale_while_revalidate := d.get("stale-while-revalidate"):
         try:
-            ttl += int(d["stale-while-revalidate"]) * 0.1
+            ttl += int(stale_while_revalidate) * 0.1
         except ValueError:
             pass
 

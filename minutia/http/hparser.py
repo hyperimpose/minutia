@@ -36,13 +36,13 @@ def age(headers):
         return None
 
 
-def cache_control(headers):
+def cache_control(headers) -> dict[str, str | None]:
     dir_s = headers.get("Cache-Control", "")
 
     dir_l = [x.strip() for x in dir_s.lower().split(",")]
     dir_l = [x.split("=", 1) for x in dir_l if x]
 
-    directives = {}
+    directives: dict[str, str | None] = {}
     for d in dir_l:
         if len(d) == 2:
             k, v = d
