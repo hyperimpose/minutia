@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (C) 2023-2024 hyperimpose.org
+# Copyright (C) 2023-2025 hyperimpose.org
 #
 # This file is part of minutia.
 #
@@ -48,7 +48,7 @@ class CustomHttpYouTube(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(r[1]["thumbnail_width"], 480)
         self.assertIn("<iframe ", r[1]["html"])
 
-        self.assertGreater(r[1]["_ttl"], 0)
+        self.assertEqual(r[1]["_ttl"], None)
 
     async def test_m_video(self):
         u = "https://m.youtube.com/watch?v=rdwz7QiG0lk"
