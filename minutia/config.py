@@ -29,4 +29,4 @@ max_filesize = 14_600  # 14.6 kB max filesize for downloaded files
 
 
 # HTTP Settings
-http_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"  # noqa
+http_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"  # noqa
