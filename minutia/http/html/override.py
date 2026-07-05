@@ -21,7 +21,7 @@ import re
 
 MAX_HTMLSIZE = {
     # Github Files
-    re.compile(r"(?i:https?://)?(?i:www\.)?(?i:github\.com)/.*/.*/.*"): 35_000
+    re.compile(r"(?i:https?://)?(?i:www\.)?(?i:github\.com)/.*/.*/.*"): 70_000
 }
 
 
