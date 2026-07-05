@@ -40,7 +40,7 @@ async def handler(url: str, _headers):
     # IDs are integers according to https://docs.x.com/fundamentals/x-ids
     url = re.sub(r'(/status/\d+).*', r'\1', url)
 
-    u = f"https://publish.twitter.com/oembed?url={url}"
+    u = f"https://publish.x.com/oembed?url={url}"
     r = await utils.client.get(u)
     j = r.json()
 
