@@ -60,7 +60,7 @@ async def handle1(r, fp, is_complete=False):
     filename = hparser.filename(r.headers)
     filesize = hparser.filesize(r.headers)
 
-    if is_complete:
+    if is_complete and _has_pillow:
         width, height, artist, title = info_pillow(fp)
         explicit = await utils.get_explicit(r, fp.name)
     else:
