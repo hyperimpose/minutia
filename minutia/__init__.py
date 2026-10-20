@@ -21,6 +21,8 @@ __version__ = "0.4.0"
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+import warnings
+
 import httpx
 
 from minutia import common, config, http
@@ -29,6 +31,8 @@ from minutia import common, config, http
 # ====================================================================
 # System
 # ====================================================================
+
+warnings.warn("[minutia] Minutia is longer developed. Its repository will be deleted sometime after 2027-01-01", DeprecationWarning)
 
 async def init():
     http.utils.client = httpx.AsyncClient()
